@@ -1,0 +1,4 @@
+node_modules
+src/ANTLRParser/grammar/.antlr
+tests/grammars/.antlr
+dist
