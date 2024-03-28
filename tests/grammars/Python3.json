@@ -1,0 +1,5020 @@
+{
+  "grammarDecl": {
+    "identifier": "Python3Parser",
+    "grammarType": "grammar"
+  },
+  "rules": [
+    {
+      "type": "parserRuleSpec",
+      "name": "single_input",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "simple_stmts"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "compound_stmt"
+          },
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "file_input",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "NEWLINE"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "stmt"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": "EOF"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "eval_input",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "testlist"
+          },
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          },
+          {
+            "type": "terminal",
+            "value": "EOF"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "decorator",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "@"
+          },
+          {
+            "type": "ruleRef",
+            "value": "dotted_name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "("
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "arglist"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ")"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          },
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "decorators",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "decorator"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "decorated",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "decorators"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "classdef"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "funcdef"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "async_funcdef"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "async_funcdef",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "ASYNC"
+          },
+          {
+            "type": "ruleRef",
+            "value": "funcdef"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "funcdef",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "def"
+          },
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ruleRef",
+            "value": "parameters"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "->"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "parameters",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "typedargslist"
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "typedargslist",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "tfpdef"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "="
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "test"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "tfpdef"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "="
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "*"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "tfpdef"
+                                  },
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ruleRef",
+                                            "value": "tfpdef"
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": "="
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "test"
+                                                  }
+                                                ]
+                                              ]
+                                            },
+                                            "suffix": "?"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "*"
+                                  },
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": "**"
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "tfpdef"
+                                                  },
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": ","
+                                                  }
+                                                ]
+                                              ]
+                                            },
+                                            "suffix": "?"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "?"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "**"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "tfpdef"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ","
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "*"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "tfpdef"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "tfpdef"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "="
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "**"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "tfpdef"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ","
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "**"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "tfpdef"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "tfpdef",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "varargslist",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "vfpdef"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "="
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "test"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "vfpdef"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "="
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "*"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "vfpdef"
+                                  },
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ruleRef",
+                                            "value": "vfpdef"
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": "="
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "test"
+                                                  }
+                                                ]
+                                              ]
+                                            },
+                                            "suffix": "?"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "*"
+                                  },
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": "**"
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "vfpdef"
+                                                  },
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": ","
+                                                  }
+                                                ]
+                                              ]
+                                            },
+                                            "suffix": "?"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "?"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "**"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "vfpdef"
+                                  },
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "?"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "*"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "vfpdef"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "vfpdef"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "="
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "**"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "vfpdef"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ","
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "**"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "vfpdef"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "vfpdef",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "simple_stmts"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "compound_stmt"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "simple_stmts",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "simple_stmt"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ";"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "simple_stmt"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ";"
+          },
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "simple_stmt",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "expr_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "del_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "pass_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "flow_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "import_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "global_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "nonlocal_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "assert_stmt"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "expr_stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "testlist_star_expr"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "annassign"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "augassign"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "yield_expr"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "testlist"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "="
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "yield_expr"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "testlist_star_expr"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "annassign",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "="
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "testlist_star_expr",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "star_expr"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "test"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "star_expr"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "augassign",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "+="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "-="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "*="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "@="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "/="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "%="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "&="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "|="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "^="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "<<="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": ">>="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "**="
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "//="
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "del_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "del"
+          },
+          {
+            "type": "ruleRef",
+            "value": "exprlist"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "pass_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "pass"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "flow_stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "break_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "continue_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "return_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "raise_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "yield_stmt"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "break_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "break"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "continue_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "continue"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "return_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "return"
+          },
+          {
+            "type": "ruleRef",
+            "value": "testlist"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "yield_stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "yield_expr"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "raise_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "raise"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "from"
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "test"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "import_stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "import_name"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "import_from"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "import_name",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "import"
+          },
+          {
+            "type": "ruleRef",
+            "value": "dotted_as_names"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "import_from",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "from"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "."
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "..."
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "*"
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "dotted_name"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "."
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "..."
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "+"
+                          }
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "type": "terminal",
+                    "value": "import"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "*"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "("
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "import_as_names"
+                          },
+                          {
+                            "type": "terminal",
+                            "value": ")"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "import_as_names"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "import_as_name",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "as"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "dotted_as_name",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "dotted_name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "as"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "import_as_names",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "import_as_name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "import_as_name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "dotted_as_names",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "dotted_as_name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "dotted_as_name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "dotted_name",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "."
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "global_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "global"
+          },
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "nonlocal_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "nonlocal"
+          },
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "assert_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "assert"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "compound_stmt",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "if_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "while_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "for_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "try_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "with_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "funcdef"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "classdef"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "decorated"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "async_stmt"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "match_stmt"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "async_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "ASYNC"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "funcdef"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "with_stmt"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "for_stmt"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "if_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "if"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "elif"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "block"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "else"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "block"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "while_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "while"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "else"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "block"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "for_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "for"
+          },
+          {
+            "type": "ruleRef",
+            "value": "exprlist"
+          },
+          {
+            "type": "terminal",
+            "value": "in"
+          },
+          {
+            "type": "ruleRef",
+            "value": "testlist"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "else"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "block"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "try_stmt",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "try"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ":"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "block"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "except_clause"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ":"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "block"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "+"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "else"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ":"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "block"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "finally"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ":"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "block"
+                                  }
+                                ]
+                              ]
+                            },
+                            "suffix": "?"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "finally"
+                          },
+                          {
+                            "type": "terminal",
+                            "value": ":"
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "block"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "with_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "with"
+          },
+          {
+            "type": "ruleRef",
+            "value": "with_item"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "with_item"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "with_item",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "as"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "expr"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "except_clause",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "except"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": "as"
+                          },
+                          {
+                            "type": "ruleRef",
+                            "value": "name"
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "?"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "block",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "simple_stmts"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          },
+          {
+            "type": "terminal",
+            "value": "INDENT"
+          },
+          {
+            "type": "ruleRef",
+            "value": "stmt"
+          },
+          {
+            "type": "terminal",
+            "value": "DEDENT"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "match_stmt",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "match"
+          },
+          {
+            "type": "ruleRef",
+            "value": "subject_expr"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "terminal",
+            "value": "NEWLINE"
+          },
+          {
+            "type": "terminal",
+            "value": "INDENT"
+          },
+          {
+            "type": "ruleRef",
+            "value": "case_block"
+          },
+          {
+            "type": "terminal",
+            "value": "DEDENT"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "subject_expr",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "star_named_expression"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "ruleRef",
+            "value": "star_named_expressions"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "star_named_expressions",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "ruleRef",
+            "value": "star_named_expression"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "star_named_expression",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "*"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "case_block",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "case"
+          },
+          {
+            "type": "ruleRef",
+            "value": "patterns"
+          },
+          {
+            "type": "ruleRef",
+            "value": "guard"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "guard",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "if"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "patterns",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "open_sequence_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "as_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "or_pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "as_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "or_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": "as"
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern_capture_target"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "or_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "closed_pattern"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "|"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "closed_pattern"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "closed_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "literal_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "capture_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "wildcard_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "value_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "group_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "sequence_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "mapping_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "class_pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "literal_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "signed_number"
+          },
+          {
+            "type": "action",
+            "value": "{ this.CannotBePlusMinus() }"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "complex_number"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "strings"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "None"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "True"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "False"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "literal_expr",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "signed_number"
+          },
+          {
+            "type": "action",
+            "value": "{ this.CannotBePlusMinus() }"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "complex_number"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "strings"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "None"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "True"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "False"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "complex_number",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "signed_real_number"
+          },
+          {
+            "type": "terminal",
+            "value": "+"
+          },
+          {
+            "type": "ruleRef",
+            "value": "imaginary_number"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "signed_real_number"
+          },
+          {
+            "type": "terminal",
+            "value": "-"
+          },
+          {
+            "type": "ruleRef",
+            "value": "imaginary_number"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "signed_number",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "NUMBER"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "-"
+          },
+          {
+            "type": "terminal",
+            "value": "NUMBER"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "signed_real_number",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "real_number"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "-"
+          },
+          {
+            "type": "ruleRef",
+            "value": "real_number"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "real_number",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "NUMBER"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "imaginary_number",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "NUMBER"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "capture_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "pattern_capture_target"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "pattern_capture_target",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "action",
+            "value": "{ this.CannotBeDotLpEq() }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "wildcard_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "_"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "value_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "attr"
+          },
+          {
+            "type": "action",
+            "value": "{ this.CannotBeDotLpEq() }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "attr",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "."
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "name"
+                  }
+                ]
+              ]
+            },
+            "suffix": "+"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "name_or_attr",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "attr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "group_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "sequence_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "["
+          },
+          {
+            "type": "ruleRef",
+            "value": "maybe_sequence_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": "]"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "open_sequence_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "open_sequence_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "maybe_star_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "ruleRef",
+            "value": "maybe_sequence_pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "maybe_sequence_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "maybe_star_pattern"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "maybe_star_pattern"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "maybe_star_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "star_pattern"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "star_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "*"
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern_capture_target"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "*"
+          },
+          {
+            "type": "ruleRef",
+            "value": "wildcard_pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "mapping_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "{"
+          },
+          {
+            "type": "terminal",
+            "value": "}"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "{"
+          },
+          {
+            "type": "ruleRef",
+            "value": "double_star_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": "}"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "{"
+          },
+          {
+            "type": "ruleRef",
+            "value": "items_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "ruleRef",
+            "value": "double_star_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": "}"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "{"
+          },
+          {
+            "type": "ruleRef",
+            "value": "items_pattern"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "items_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "key_value_pattern"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "key_value_pattern"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "key_value_pattern",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "literal_expr"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "attr"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "double_star_pattern",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "**"
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern_capture_target"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "class_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name_or_attr"
+          },
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "name_or_attr"
+          },
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "positional_patterns"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "name_or_attr"
+          },
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "keyword_patterns"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "name_or_attr"
+          },
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "positional_patterns"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "ruleRef",
+            "value": "keyword_patterns"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "positional_patterns",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "pattern"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "keyword_patterns",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "keyword_pattern"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "keyword_pattern"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "keyword_pattern",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "terminal",
+            "value": "="
+          },
+          {
+            "type": "ruleRef",
+            "value": "pattern"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "test",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "or_test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "if"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "or_test"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": "else"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "lambdef"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "test_nocond",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "or_test"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "lambdef_nocond"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "lambdef",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "lambda"
+          },
+          {
+            "type": "ruleRef",
+            "value": "varargslist"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "lambdef_nocond",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "lambda"
+          },
+          {
+            "type": "ruleRef",
+            "value": "varargslist"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test_nocond"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "or_test",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "and_test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "or"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "and_test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "and_test",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "not_test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "and"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "not_test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "not_test",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "not"
+          },
+          {
+            "type": "ruleRef",
+            "value": "not_test"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "comparison"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "comparison",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "comp_op"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "expr"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "comp_op",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "<"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": ">"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "=="
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": ">="
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "<="
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "<>"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "!="
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "in"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "not"
+          },
+          {
+            "type": "terminal",
+            "value": "in"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "is"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "is"
+          },
+          {
+            "type": "terminal",
+            "value": "not"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "star_expr",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "*"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "expr",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "atom_expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "terminal",
+            "value": "**"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "+"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "-"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "~"
+                  }
+                ]
+              ]
+            },
+            "suffix": "+"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "*"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "@"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "/"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "%"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "//"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "+"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "-"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "<<"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": ">>"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "terminal",
+            "value": "&"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "terminal",
+            "value": "^"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          },
+          {
+            "type": "terminal",
+            "value": "|"
+          },
+          {
+            "type": "ruleRef",
+            "value": "expr"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "atom_expr",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "AWAIT"
+          },
+          {
+            "type": "ruleRef",
+            "value": "atom"
+          },
+          {
+            "type": "ruleRef",
+            "value": "trailer"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "atom",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "yield_expr"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "testlist_comp"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "["
+          },
+          {
+            "type": "ruleRef",
+            "value": "testlist_comp"
+          },
+          {
+            "type": "terminal",
+            "value": "]"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "{"
+          },
+          {
+            "type": "ruleRef",
+            "value": "dictorsetmaker"
+          },
+          {
+            "type": "terminal",
+            "value": "}"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "NUMBER"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "STRING"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "..."
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "None"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "True"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "False"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "name",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "NAME"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "_"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "match"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "testlist_comp",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "star_expr"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "comp_for"
+                  }
+                ],
+                [
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "terminal",
+                            "value": ","
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "star_expr"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "suffix": "*"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "trailer",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "("
+          },
+          {
+            "type": "ruleRef",
+            "value": "arglist"
+          },
+          {
+            "type": "terminal",
+            "value": ")"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "["
+          },
+          {
+            "type": "ruleRef",
+            "value": "subscriptlist"
+          },
+          {
+            "type": "terminal",
+            "value": "]"
+          }
+        ],
+        [
+          {
+            "type": "terminal",
+            "value": "."
+          },
+          {
+            "type": "ruleRef",
+            "value": "name"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "subscriptlist",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "subscript_"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "subscript_"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "subscript_",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "ruleRef",
+            "value": "sliceop"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "sliceop",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "exprlist",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "expr"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "star_expr"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "expr"
+                          }
+                        ],
+                        [
+                          {
+                            "type": "ruleRef",
+                            "value": "star_expr"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "testlist",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "test"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "dictorsetmaker",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ":"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "terminal",
+                                    "value": "**"
+                                  },
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "expr"
+                                  }
+                                ]
+                              ]
+                            }
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "comp_for"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "test"
+                                                  },
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": ":"
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "test"
+                                                  }
+                                                ],
+                                                [
+                                                  {
+                                                    "type": "terminal",
+                                                    "value": "**"
+                                                  },
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "expr"
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "*"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ","
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "ebnf",
+                    "block": {
+                      "type": "ebnfList",
+                      "list": [
+                        [
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "test"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "star_expr"
+                                  }
+                                ]
+                              ]
+                            }
+                          },
+                          {
+                            "type": "ebnf",
+                            "block": {
+                              "type": "ebnfList",
+                              "list": [
+                                [
+                                  {
+                                    "type": "ruleRef",
+                                    "value": "comp_for"
+                                  }
+                                ],
+                                [
+                                  {
+                                    "type": "ebnf",
+                                    "block": {
+                                      "type": "ebnfList",
+                                      "list": [
+                                        [
+                                          {
+                                            "type": "terminal",
+                                            "value": ","
+                                          },
+                                          {
+                                            "type": "ebnf",
+                                            "block": {
+                                              "type": "ebnfList",
+                                              "list": [
+                                                [
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "test"
+                                                  }
+                                                ],
+                                                [
+                                                  {
+                                                    "type": "ruleRef",
+                                                    "value": "star_expr"
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    "suffix": "*"
+                                  },
+                                  {
+                                    "type": "terminal",
+                                    "value": ","
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "classdef",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "class"
+          },
+          {
+            "type": "ruleRef",
+            "value": "name"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": "("
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "arglist"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": ")"
+                  }
+                ]
+              ]
+            },
+            "suffix": "?"
+          },
+          {
+            "type": "terminal",
+            "value": ":"
+          },
+          {
+            "type": "ruleRef",
+            "value": "block"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "arglist",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "argument"
+          },
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "terminal",
+                    "value": ","
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "argument"
+                  }
+                ]
+              ]
+            },
+            "suffix": "*"
+          },
+          {
+            "type": "terminal",
+            "value": ","
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "argument",
+      "definition": [
+        [
+          {
+            "type": "ebnf",
+            "block": {
+              "type": "ebnfList",
+              "list": [
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "comp_for"
+                  }
+                ],
+                [
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  },
+                  {
+                    "type": "terminal",
+                    "value": "="
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "**"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ],
+                [
+                  {
+                    "type": "terminal",
+                    "value": "*"
+                  },
+                  {
+                    "type": "ruleRef",
+                    "value": "test"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "comp_iter",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "comp_for"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "comp_if"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "comp_for",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "ASYNC"
+          },
+          {
+            "type": "terminal",
+            "value": "for"
+          },
+          {
+            "type": "ruleRef",
+            "value": "exprlist"
+          },
+          {
+            "type": "terminal",
+            "value": "in"
+          },
+          {
+            "type": "ruleRef",
+            "value": "or_test"
+          },
+          {
+            "type": "ruleRef",
+            "value": "comp_iter"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "comp_if",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "if"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test_nocond"
+          },
+          {
+            "type": "ruleRef",
+            "value": "comp_iter"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "encoding_decl",
+      "definition": [
+        [
+          {
+            "type": "ruleRef",
+            "value": "name"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "yield_expr",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "yield"
+          },
+          {
+            "type": "ruleRef",
+            "value": "yield_arg"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "yield_arg",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "from"
+          },
+          {
+            "type": "ruleRef",
+            "value": "test"
+          }
+        ],
+        [
+          {
+            "type": "ruleRef",
+            "value": "testlist"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "parserRuleSpec",
+      "name": "strings",
+      "definition": [
+        [
+          {
+            "type": "terminal",
+            "value": "STRING"
+          }
+        ]
+      ]
+    }
+  ]
+}

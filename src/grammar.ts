@@ -20,11 +20,20 @@ export interface ebnfList extends withType<'ebnfList'> {
   list: alternatives[]
 }
 
+export interface action extends withType<'action'> {
+  value: string
+}
+
 export type atom = ruleRef | terminalDef
 
-export type ebnf = ebnfList
+export type suffix = '*' | '+' | '?'
 
-export type element =  atom | ebnf
+export interface ebnf extends withType<'ebnf'> {
+  block : ebnfList
+  suffix ?: suffix
+}
+
+export type element =  atom | ebnf | action
 
 export type alternatives = element[]
 
@@ -62,8 +71,10 @@ export type GrammarNode =
  | lexerRuleSpec
  | ruleRef
  | terminalDef
+ | action
  | element
  | alternatives
  | singleToken
  | toBeSpecified
  | lexerDefinition
+ | suffix
