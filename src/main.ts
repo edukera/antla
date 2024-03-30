@@ -1,9 +1,18 @@
+/**
+ * Project Name: antlrMinAST
+ * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
+ * License: MIT
+ * Creation Date: 2024-03-29
+ */
+
 import * as fs from 'fs';
 import { CharStream, CommonTokenStream }  from 'antlr4';
 import ANTLRv4Lexer from './ANTLRParser/ANTLRv4Lexer';
 import ANTLRv4Parser from './ANTLRParser/ANTLRv4Parser';
 import { BuildVisitor } from './visitors';
 import { grammarSpec } from './grammar';
+import { grammarToTypes } from './mapper';
+import { createTs } from './tscreator';
 
 function generate(filePath: string): void {
     try {
@@ -18,6 +27,9 @@ function generate(filePath: string): void {
         const builder = new BuildVisitor()
         const grammarNode : grammarSpec = builder.visit(tree) as grammarSpec
         console.log(JSON.stringify(grammarNode, null, 2))
+        const types = grammarToTypes(grammarNode)
+        //console.log(JSON.stringify(types, null, 2))
+        console.log(createTs(types))
     } catch (error) {
         console.error('Error while reading grammar file:', error);
     }
@@ -25,6 +37,6 @@ function generate(filePath: string): void {
 
 // Utilisation de la fonction 'generate'
 // Remplacez './chemin/vers/votre/fichier.txt' par le chemin réel du fichier que vous souhaitez lire
-//generate('/Users/benoitrognier/Projects/franceioi/antlrMinAST/tests/grammars/ExprSimple.g4');
+generate('/Users/benoitrognier/Projects/franceioi/antlrMinAST/tests/grammars/ExprSimple.g4');
 //generate('/Users/benoitrognier/Projects/franceioi/antlrMinAST/tests/grammars/Expr.g4');
-generate('/Users/benoitrognier/Projects/franceioi/antlrMinAST/tests/grammars/Python3Parser.g4');
+//generate('/Users/benoitrognier/Projects/franceioi/antlrMinAST/tests/grammars/Python3Parser.g4');

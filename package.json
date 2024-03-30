@@ -13,10 +13,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.30",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.4.3"
+    "rimraf": "^5.0.5"
   },
   "dependencies": {
+    "typescript": "^5.4.3",
     "antlr4": "^4.13.1-patch-1"
   }
 }

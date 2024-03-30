@@ -8,7 +8,8 @@
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./dist",
-    "strict": true
+    "strict": true,
+    "esModuleInterop": true
     // ... autres options de compilation
   },
   "include": [

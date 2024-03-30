@@ -1,5 +1,11 @@
+/**
+ * Project Name: antlrMinAST
+ * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
+ * License: MIT
+ * Creation Date: 2024-03-29
+ */
 
-type withType<T> = {
+export type withType<T> = {
   type: T
 }
 
