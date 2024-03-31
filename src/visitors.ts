@@ -1,7 +1,7 @@
 import {ParseTreeVisitor} from 'antlr4';
 import ANTLRv4ParserVisitor from './ANTLRParser/ANTLRv4ParserVisitor'
 import { GrammarSpecContext, GrammarDeclContext, RuleSpecContext, ParserRuleSpecContext, RulesContext, LexerRuleSpecContext, RuleAltListContext, LabeledAltContext, ElementContext, LabeledElementContext, AtomContext, TerminalDefContext, RulerefContext, AlternativeContext, EbnfContext, LexerAltContext, LexerElementContext, LexerAtomContext, ActionBlockContext, BlockContext, BlockSuffixContext, EbnfSuffixContext } from "./ANTLRParser/ANTLRv4Parser";
-import { GrammarNode, grammarDecl, grammarSpec, lexerRuleSpec, parserRuleSpec, rule, ruleAlt, atom, element, ebnf, lexerDefinition, action, suffix } from './grammar'
+import { GrammarNode, grammarDecl, grammarSpec, lexerRuleSpec, parserRuleSpec, rule, atom, element, ebnf, lexerDefinition, action, suffix, alternatives } from './grammar'
 
 export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLRv4ParserVisitor<GrammarNode> {
 
@@ -105,7 +105,7 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
     }
   }
 
-  private mapAltContext(ctx: LabeledAltContext) : ruleAlt {
+  private mapAltContext(ctx: LabeledAltContext) : alternatives {
     return ctx.alternative().element_list().map((eltCtx : ElementContext) => {
       return this.mapElement(eltCtx)
     })

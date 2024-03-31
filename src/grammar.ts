@@ -43,11 +43,9 @@ export type element =  atom | ebnf | action
 
 export type alternatives = element[]
 
-export type ruleAlt =  alternatives
-
 export interface parserRuleSpec extends withType<'parserRuleSpec'> {
   name: string
-  definition : ruleAlt[]
+  definition : alternatives[] // or element[][]
 }
 
 export interface singleToken extends withType<'singleToken'> {
