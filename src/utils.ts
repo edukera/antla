@@ -39,3 +39,14 @@ export function minimize(string: string): string {
   if (string.length === 0) return "";
   return string.charAt(0).toLowerCase() + string.slice(1);
 }
+
+export function zip<T, U>(array1: T[], array2: U[]): [T, U][] {
+  const length = Math.min(array1.length, array2.length);
+  const result: [T, U][] = [];
+
+  for (let i = 0; i < length; i++) {
+    result.push([array1[i], array2[i]]);
+  }
+
+  return result;
+}

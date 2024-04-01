@@ -47,15 +47,20 @@ expr:	expr ('*'|'/') expr
 generates:
 
 ```ts
+
+type multDivToken = '*' | '/'
+
+type plusMinusToken = '+' | '-'
+
 interface multDivExpr extends withType<'multDivExpr'> {
   expr1 : expr
-  token : '*' | '/'
+  token : multDivToken
   expr2 : expr
 }
 
 interface plusMinusExpr extends withType<'plusMinusExpr'> {
   expr1 : expr
-  token : '+' | '-'
+  token : plusMinusToken
   expr2 : expr
 }
 
