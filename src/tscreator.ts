@@ -80,7 +80,12 @@ const createFromType = (type: typeDecl) => {
   return factory.createTypeAliasDeclaration(
     undefined,
     factory.createIdentifier(type.name),
-    undefined,
+    type.generic? [factory.createTypeParameterDeclaration(
+      undefined,
+      factory.createIdentifier(type.generic),
+      undefined,
+      undefined
+    )] : undefined,
     createFromTSType(type.value)
   )
 }

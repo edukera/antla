@@ -6,10 +6,28 @@
  */
 
 import { alternatives, atom, ebnf, element, grammarSpec, parserRuleSpec, ruleRef, terminalDef } from "./grammar";
-import { tsType, pojo, decl, field, interfaceDecl, typeDecl } from "./types";
+import { tsType, pojo, decl, field, interfaceDecl, typeDecl, union, ref } from "./types";
 import { capitalize, minimize, tokenTranslation, zip } from "./utils";
 
-const dummyTypeDecl : decl = { type: 'type', name: 'dummy', value: { type: 'literal', value: 'dummy' } }
+/******************************************************************************
+ * type withType<T> = { type: T }
+ ******************************************************************************/
+const withTypeDecl : decl = {
+  type: 'type',
+  name: 'withType',
+  generic: 'T',
+  value: {
+    type: 'pojo',
+    fields: [{
+      name: 'type',
+      ftype: {
+        type: 'ref',
+        name: 'T'
+      },
+      optional: false
+    }]
+  }
+}
 
 /******************************************************************************
  * EBNF generic reducer over grammar specification
@@ -23,14 +41,14 @@ const genericEBNFReducer = <T>() => (
   return g.rules.reduce((acc, r) => {
     switch (r.type) {
       case 'parserRuleSpec':
-        return acc.concat(r.definition.reduce((acc, alternives) => {
-          return alternives.reduce((acc, elt) => {
+        return r.definition.reduce((acc1, alternives) => {
+          return alternives.reduce((acc2, elt) => {
             switch (elt.type) {
-              case 'ebnf': return concatAcc(acc, reduceEBNF(elt))
-              default: return acc
+              case 'ebnf': return concatAcc(acc2, reduceEBNF(elt))
+              default: return acc2
             }
-          }, acc)
-        }, acc))
+          }, acc1)
+        }, acc)
       default: return acc
     }
   }, [] as T[])
@@ -40,20 +58,17 @@ const genericEBNFReducer = <T>() => (
  * Generate token types from ebnfs token definitions
  ******************************************************************************/
 
-const eltToType = (elt: element) : tsType => {
+const eltToType = (elt: element, rules: rules) : tsType => {
   switch (elt.type) {
     case 'terminal':
-      return {
-        type: 'literal',
-        value: elt.value
-      }
+      return terminalToType(elt, rules)
     default: throw new Error(`eltToType: element not handled ${elt}`)
   }
 }
 
-const altsToType = (alts: alternatives) : tsType => {
+const altsToType = (alts: alternatives, rules: rules) : tsType => {
   const types = alts.reduce((acc, elt) => {
-    return acc.concat(eltToType(elt))
+    return acc.concat(eltToType(elt, rules))
   }, [] as tsType[])
   if (types.length === 1) {
     return types[0]
@@ -62,11 +77,11 @@ const altsToType = (alts: alternatives) : tsType => {
   }
 }
 
-const ebnftoType = (ebnf: ebnf) : tsType => {
+const ebnftoType = (ebnf: ebnf, rules: rules) : tsType => {
   switch (ebnf.block.type) {
     case 'ebnfList':
       const types = ebnf.block.list.reduce((acc, alts) => {
-        return acc.concat(altsToType(alts))
+        return acc.concat(altsToType(alts, rules))
       }, [] as tsType[])
       return {
         type: 'union',
@@ -86,14 +101,13 @@ const ebnfToName = (ebnf: ebnf, ruleName: string, rules: rules) : string => {
 }
 
 const makeEbnfTypeDecls = (g: grammarSpec, ruleName: string, rules: rules) : decl[] => {
-  const types = genericEBNFReducer<tsType>()(g, ebnftoType, ((ts, t) => ts.concat(t)))
-  const names = genericEBNFReducer<string>()(g, (ebnf => ebnfToName(ebnf, ruleName, rules)), (ts, t) => ts.concat(t))
+  const types = genericEBNFReducer<tsType>()(g, ebnf => ebnftoType(ebnf, rules), (ts, t) => ts.concat(t))
+  const names = genericEBNFReducer<string>()(g, ebnf => ebnfToName(ebnf, ruleName, rules), (ts, t) => ts.concat(t))
   return zip(names, types).reduce((acc, [baseName, type]) => {
     return acc.concat({
       type: 'type',
       name: makeEbnfTypeName(baseName),
       value: type
-
     })
   }, [] as decl[])
 }
@@ -101,6 +115,7 @@ const makeEbnfTypeDecls = (g: grammarSpec, ruleName: string, rules: rules) : dec
 type rules = {
   parsers: string[]
   lexers: { [key: string] : boolean } // whether lexer rule is terminal or not
+  tokens: { [key: string] : string } // token transaltion
   lexerTypes: { [key: string] : tsType }
 }
 
@@ -110,10 +125,17 @@ const makeRulesData = (gSpec: grammarSpec) : rules => {
       case 'parserRuleSpec': return { ...acc, parsers: [ ...acc.parsers, r.name ] }
       case 'lexerRuleSpec': {
         acc.lexers[r.name] = r.definition.type === 'singleToken'
+        if (r.definition.type === 'singleToken') {
+          acc.tokens[r.name] = r.definition.value
+        }
         return acc
       }
     }
-  }, { parsers: [], lexers: {}, lexerTypes: { 'INT': { type: 'atom', name: 'number' } } } as rules)
+  }, { parsers: [], lexers: {}, tokens: {}, lexerTypes: {
+    'INT': { type: 'atom', name: 'number' },
+    'SCIENTIFIC_NUMBER' : { type: 'atom', name: 'number' },
+    'VARIABLE' : { type: 'atom', name: 'string' }
+  } } as rules)
 }
 
 const makeEbnfTypeName = (name: string) : string => {
@@ -147,7 +169,10 @@ const terminalToType = (tal: terminalDef, rules: rules) : tsType => {
   if (false === isUnique(tal, rules) && tal.value in rules.lexerTypes) {
     return rules.lexerTypes[tal.value]
   } else {
-    throw new Error(`terminalToType: terminal not handled '${tal}'`)
+    return {
+      type: 'literal',
+      value: rules.tokens[tal.value]
+    }
   }
 }
 
@@ -279,6 +304,8 @@ const altToDecl = (alts: alternatives, rules: rules, ruleName: string) : decl =>
         if (false === isUnique(elt, rules)) {
           const newTokenIdx = tokenIdx + 1
           return [ ruleIdx, newTokenIdx, fields.concat(makeTerminalField(elt, newTokenIdx, counts.tokens, rules)) ]
+        } else if (alts.length === 1) {
+          return [ ruleIdx, tokenIdx, fields.concat(makeTerminalField(elt, tokenIdx, counts.tokens, rules))]
         } else {
           return [ ruleIdx, tokenIdx, fields ]
         }
@@ -301,7 +328,6 @@ const altToDecl = (alts: alternatives, rules: rules, ruleName: string) : decl =>
       genericarg: name
     }
   }
-  return dummyTypeDecl
 }
 
 const interfaceToType = (name: string, decl: interfaceDecl) : typeDecl => {
@@ -315,6 +341,13 @@ const interfaceToType = (name: string, decl: interfaceDecl) : typeDecl => {
   }
 }
 
+const declToRef = (decl: decl) : ref => {
+  return {
+    type: 'ref',
+    name: decl.name
+  }
+}
+
 const parserRuleToDecls = (r: parserRuleSpec, rules : rules) : decl[] => {
   console.log(r.name)
   const decls = r.definition.map((alts, i) => altToDecl(alts, rules, r.name))
@@ -322,8 +355,29 @@ const parserRuleToDecls = (r: parserRuleSpec, rules : rules) : decl[] => {
     if (decls[0].type !== 'interface') throw new Error(`unique decl not interface not handled`)
     // replace interface declaration with type decl
     return [ interfaceToType(r.name, decls[0]) ]
+  } else {
+    const union : decl = {
+      type: 'type',
+      name: r.name,
+      value: {
+        type: 'union',
+        types: decls.map(declToRef)
+      }
+    }
+    decls.push(union)
   }
   return decls
+}
+
+const uniqueDecls = (decls: decl[]) : decl[] => {
+  const acc: [string[], decl[]] = decls.reduce(([acc_ids, acc_decls], decl) => {
+    if (acc_ids.includes(decl.name)) {
+      return [acc_ids, acc_decls]
+    } else {
+      return [acc_ids.concat(decl.name), acc_decls.concat(decl)]
+    }
+  }, [[], []] as [string[], decl[]])
+  return acc[1]
 }
 
 export function grammarToTypes(gSpec : grammarSpec) : decl[] {
@@ -337,5 +391,5 @@ export function grammarToTypes(gSpec : grammarSpec) : decl[] {
       }
       case 'lexerRuleSpec': return acc
     }
-  }, ebnfTypeDecls)
+  }, [withTypeDecl].concat(uniqueDecls(ebnfTypeDecls)))
 }

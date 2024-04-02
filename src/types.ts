@@ -48,6 +48,7 @@ export interface interfaceDecl extends withType<'interface'> {
 export interface typeDecl extends withType<'type'> {
   name: string
   value: tsType
+  generic?: string
 }
 
 export type decl = interfaceDecl | typeDecl
