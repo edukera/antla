@@ -5,7 +5,7 @@
  * Creation Date: 2024-03-29
  */
 
-import { alternatives, atom, ebnf, element, grammarSpec, parserRuleSpec, ruleRef, terminalDef } from "./grammar";
+import { alternatives, atom, ebnf, element, grammarSpec, parserRuleSpec, ruleRef, terminalDef, suffix } from "./grammar";
 import { tsType, pojo, decl, field, interfaceDecl, typeDecl, union, ref } from "./types";
 import { capitalize, minimize, tokenTranslation, zip } from "./utils";
 
@@ -43,8 +43,8 @@ const genericEBNFReducer = <T>() => (
       case 'parserRuleSpec':
         return r.definition.reduce((acc1, alternives) => {
           return alternives.reduce((acc2, elt) => {
-            switch (elt.type) {
-              case 'ebnf': return concatAcc(acc2, reduceEBNF(elt))
+            switch (elt.value.type) {
+              case 'ebnf': return concatAcc(acc2, reduceEBNF(elt.value))
               default: return acc2
             }
           }, acc1)
@@ -59,9 +59,9 @@ const genericEBNFReducer = <T>() => (
  ******************************************************************************/
 
 const eltToType = (elt: element, rules: rules) : tsType => {
-  switch (elt.type) {
+  switch (elt.value.type) {
     case 'terminal':
-      return terminalToType(elt, rules)
+      return terminalToType(elt.value, rules)
     default: throw new Error(`eltToType: element not handled ${elt}`)
   }
 }
@@ -112,11 +112,15 @@ const makeEbnfTypeDecls = (g: grammarSpec, ruleName: string, rules: rules) : dec
   }, [] as decl[])
 }
 
+/******************************************************************************
+ * Rules data
+ ******************************************************************************/
+
 type rules = {
-  parsers: string[]
+  parsers: string[] // list of parser rule names
   lexers: { [key: string] : boolean } // whether lexer rule is terminal or not
-  tokens: { [key: string] : string } // token transaltion
-  lexerTypes: { [key: string] : tsType }
+  tokens: { [key: string] : string } // token transaltion when lexers[key] is true
+  lexerTypes: { [key: string] : tsType } // token type when lexers[key] is false
 }
 
 const makeRulesData = (gSpec: grammarSpec) : rules => {
@@ -138,20 +142,24 @@ const makeRulesData = (gSpec: grammarSpec) : rules => {
   } } as rules)
 }
 
+/******************************************************************************
+ * Pojo's fields type and name
+ ******************************************************************************/
+
 const makeEbnfTypeName = (name: string) : string => {
   return minimize(name) + 'Type'
 }
 
 const makeEbnfield = (ebnf: ebnf, i: number, ruleName: string, count: number, rules: rules) : field => {
   const ebnfName = ebnfToName(ebnf, ruleName, rules)
-  return {
+  return applySuffix({
     name: hasNodeRef(ebnf) ? ebnfName : 'token' + (count === 1 ? '': '' + i),
     ftype : {
       type: 'ref',
       name: makeEbnfTypeName(ebnfName)
     },
     optional: false
-  }
+  }, ebnf.suffix)
 }
 
 const makeRefField = (ref: ruleRef, i: number, count: number) : field => {
@@ -176,13 +184,13 @@ const terminalToType = (tal: terminalDef, rules: rules) : tsType => {
   }
 }
 
-const makeTerminalField = (tal: terminalDef, i: number, count: number, rules: rules) : field[] => {
+const makeTerminalField = (tal: terminalDef, i: number, count: number, rules: rules) : field => {
   const fieldName = 'field' + ((count === 1) ? '' : ('' + i))
-  return [{
+  return {
     name: fieldName,
     ftype: terminalToType(tal, rules),
     optional: false
-  }]
+  }
 }
 
 type elementCount = {
@@ -193,7 +201,7 @@ type elementCount = {
 const hasNodeRef = (ebnf : ebnf) : boolean => {
   return ebnf.block.list.reduce((acc, alt) => {
     return alt.reduce((acc, elt) => {
-      switch (elt.type) {
+      switch (elt.value.type) {
         case 'ruleRef': return acc || true
         default: return acc || false
       }
@@ -208,31 +216,35 @@ const isUnique = (alt: terminalDef, rules: rules) : boolean => {
   return true
 }
 
+/******************************************************************************
+ * Count elements for naming
+ ******************************************************************************/
+
 const countElement = (alts: alternatives, rules: rules) : elementCount => {
   const init : elementCount = { rules: {}, tokens: 0 }
-  return alts.reduce((acc, alt) => {
-    switch (alt.type) {
+  return alts.reduce((acc, elt) => {
+    switch (elt.value.type) {
       case 'ruleRef':
-        if (acc.rules[alt.value] === undefined) {
-          acc.rules[alt.value] = 1
+        if (acc.rules[elt.value.value] === undefined) {
+          acc.rules[elt.value.value] = 1
         } else {
-          acc.rules[alt.value] ++
+          acc.rules[elt.value.value] ++
         }
         break
       case 'terminal':
-        if (false === isUnique(alt, rules)) {
+        if (false === isUnique(elt.value, rules)) {
           // only non unique terminal token count as field
           acc.tokens ++
         }
         break
       case 'ebnf':
-        if (hasNodeRef(alt)) {
-          throw new Error(`ebnf with rule ref not handled: ${alt}`)
+        if (hasNodeRef(elt.value)) {
+          throw new Error(`ebnf with rule ref not handled: ${elt}`)
         } else {
           acc.tokens ++
         }
         break
-      case 'action': throw new Error(`Action not handled: ${JSON.stringify(alt, null, 2)}`)
+      case 'action': throw new Error(`Action not handled: ${JSON.stringify(elt, null, 2)}`)
     }
     return acc
   }, init)
@@ -257,25 +269,45 @@ const terminalToName = (tle: terminalDef, rules: rules) : string => {
  * @returns type name for alternatives
  */
 const altToTypeName = (alts: alternatives, ruleName: string, rules: rules) : string => {
-  return alts.reduce((acc, alt) => {
+  return alts.reduce((acc, elt) => {
     var name = ""
-    switch (alt.type) {
+    switch (elt.value.type) {
       case 'ruleRef':
-        if (ruleName !== alt.value) {
-          name = alt.value
+        if (ruleName !== elt.value.value) {
+          name = elt.value.value
         }
         break
       case 'terminal':
-        name = terminalToName(alt, rules)
+        name = terminalToName(elt.value, rules)
         break
       case 'ebnf':
-        name = ebnfToName(alt, ruleName, rules)
+        name = ebnfToName(elt.value, ruleName, rules)
         break
       case 'action':
-        throw new Error(`Action not handled ${alt}`)
+        throw new Error(`Action not handled ${elt}`)
     }
     return acc + capitalize(name)
   }, "")
+}
+
+const applySuffix = (field : field, suffix: suffix | undefined) : field => {
+  if (suffix !== undefined) {
+    switch (suffix) {
+      case '*':
+      case '+': // TODO: use type NonEmptyArray<T> = [T, ...T[]] for '+' ?
+        return { ...field,
+          name: field.name + 's',
+          ftype: {
+            type: 'array',
+            arg : field.ftype
+          }
+        }
+      case '?':
+        return { ...field, optional: true }
+    }
+  } else {
+    return field
+  }
 }
 
 /**
@@ -294,34 +326,42 @@ const altToDecl = (alts: alternatives, rules: rules, ruleName: string) : decl =>
   const baseName = altToTypeName(alts, ruleName, rules)
   const name = minimize(baseName) + capitalize(ruleName)
   console.log(name)
-  const acc : [number, number, field[]] = [0, 0, []]
-  const res : [number, number, field[]] = alts.reduce(([ruleIdx, tokenIdx, fields], elt) => {
-    switch (elt.type) {
-      case 'ruleRef':
+  type Acc = [number, number, field[]]
+  const acc : Acc = [0, 0, []]
+  const res : Acc = alts.reduce(([ruleIdx, tokenIdx, fields], elt) => {
+    switch (elt.value.type) {
+      case 'ruleRef': {
         const newRuleIdx = ruleIdx + 1
-        return [ newRuleIdx, tokenIdx, fields.concat(makeRefField(elt, newRuleIdx, counts.rules[elt.value]))]
+        const field = applySuffix(makeRefField(elt.value, newRuleIdx, counts.rules[elt.value.value]), elt.suffix)
+        return [ newRuleIdx, tokenIdx, fields.concat(field)]
+      }
       case 'terminal':
-        if (false === isUnique(elt, rules)) {
+        if (false === isUnique(elt.value, rules)) {
           const newTokenIdx = tokenIdx + 1
-          return [ ruleIdx, newTokenIdx, fields.concat(makeTerminalField(elt, newTokenIdx, counts.tokens, rules)) ]
+          const field = applySuffix(makeTerminalField(elt.value, newTokenIdx, counts.tokens, rules), elt.suffix)
+          return [ ruleIdx, newTokenIdx, fields.concat(field) ]
         } else if (alts.length === 1) {
-          return [ ruleIdx, tokenIdx, fields.concat(makeTerminalField(elt, tokenIdx, counts.tokens, rules))]
+          const field = applySuffix(makeTerminalField(elt.value, tokenIdx, counts.tokens, rules), elt.suffix)
+          return [ ruleIdx, tokenIdx, fields.concat(field)]
         } else {
           return [ ruleIdx, tokenIdx, fields ]
         }
-      case 'ebnf':
+      case 'ebnf': {
         // TODO: what to do when ebnf has token AND rule ...
         // fix this!
         const newTokenIdx = tokenIdx + 1
-        return [ ruleIdx, newTokenIdx, fields.concat(makeEbnfield(elt, newTokenIdx, ruleName, counts.tokens, rules)) ]
+        const field = applySuffix(makeEbnfield(elt.value, newTokenIdx, ruleName, counts.tokens, rules), elt.suffix)
+        return [ ruleIdx, newTokenIdx, fields.concat(field) ]
+      }
       case 'action':
         throw new Error(`altToDecl, action not handled: ${elt}`)
     }
   }, acc)
+  const fields = res[2]
   return {
     type: 'interface',
     name: name,
-    fields: res[2],
+    fields: fields,
     extends: {
       type: 'ref',
       name: 'withType',

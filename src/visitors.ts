@@ -62,12 +62,11 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
     return ctx.element_list().map(elt => this.mapElement(elt))
   }
 
-  private mapSuffix(ctx: BlockSuffixContext) : suffix | undefined {
+  private mapSuffix(ctx: EbnfSuffixContext) : suffix | undefined {
     if (ctx === null) return undefined
-    const ebnfSuffix : EbnfSuffixContext = ctx.ebnfSuffix()
-    const question_list = ebnfSuffix.QUESTION_list()
-    const star = ebnfSuffix.STAR()
-    const plus = ebnfSuffix.PLUS()
+    const question_list = ctx.QUESTION_list()
+    const star = ctx.STAR()
+    const plus = ctx.PLUS()
     if (star !== null) {
       return '*'
     } else if (plus !== null) {
@@ -75,6 +74,11 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
     } else if (question_list !== null) {
       return '?'
     } else return undefined
+  }
+
+  private mapBlockSuffix(ctx: BlockSuffixContext) : suffix | undefined {
+    if (ctx === null) return undefined
+    return this.mapSuffix(ctx.ebnfSuffix())
   }
 
   private mapEbnf(ctx : EbnfContext) : ebnf {
@@ -86,6 +90,13 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
         type: 'ebnfList',
         list: elements.map(altCtx => this.mapAlternative(altCtx))
       },
+      suffix: this.mapBlockSuffix(suffix)
+    }
+  }
+
+  private makeElement(value: atom | ebnf | action, suffix: EbnfSuffixContext) : element {
+    return {
+      value: value,
       suffix: this.mapSuffix(suffix)
     }
   }
@@ -94,12 +105,13 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
     const atom : AtomContext = ctx.atom()
     const ebnf : EbnfContext = ctx.ebnf()
     const action : ActionBlockContext = ctx.actionBlock()
+    const suffix : EbnfSuffixContext = ctx.ebnfSuffix()
     if (atom !== null) {
-      return this.mapAtom(atom)
+      return this.makeElement(this.mapAtom(atom), suffix)
     } else if (ebnf !== null) {
-      return this.mapEbnf(ebnf)
+      return this.makeElement(this.mapEbnf(ebnf), suffix)
     } else if (action !== null) {
-      return this.mapAction(action)
+      return this.makeElement(this.mapAction(action), suffix)
     } else {
       throw new Error(`Unknown element: ${ctx.getText()}`)
     }

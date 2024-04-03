@@ -39,7 +39,10 @@ export interface ebnf extends withType<'ebnf'> {
   suffix ?: suffix
 }
 
-export type element =  atom | ebnf | action
+export type element = {
+  value: atom | ebnf | action
+  suffix ?: suffix
+}
 
 export type alternatives = element[]
 
