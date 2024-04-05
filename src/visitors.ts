@@ -1,7 +1,8 @@
-import {ParseTreeVisitor} from 'antlr4';
+import { ParseTreeVisitor } from 'antlr4';
+
+import { ActionBlockContext, AlternativeContext, AtomContext, BlockContext, BlockSuffixContext, EbnfContext, EbnfSuffixContext, ElementContext, GrammarDeclContext, GrammarSpecContext, LabeledAltContext, LabeledElementContext, LexerAltContext, LexerAtomContext, LexerElementContext, LexerRuleSpecContext, ParserRuleSpecContext, RuleAltListContext, RulerefContext, RulesContext, RuleSpecContext, TerminalDefContext } from "./ANTLRParser/ANTLRv4Parser";
 import ANTLRv4ParserVisitor from './ANTLRParser/ANTLRv4ParserVisitor'
-import { GrammarSpecContext, GrammarDeclContext, RuleSpecContext, ParserRuleSpecContext, RulesContext, LexerRuleSpecContext, RuleAltListContext, LabeledAltContext, ElementContext, LabeledElementContext, AtomContext, TerminalDefContext, RulerefContext, AlternativeContext, EbnfContext, LexerAltContext, LexerElementContext, LexerAtomContext, ActionBlockContext, BlockContext, BlockSuffixContext, EbnfSuffixContext } from "./ANTLRParser/ANTLRv4Parser";
-import { GrammarNode, grammarDecl, grammarSpec, lexerRuleSpec, parserRuleSpec, rule, atom, element, ebnf, lexerDefinition, action, suffix, alternatives } from './grammar'
+import { action, alternatives, atom, ebnf, element, grammarDecl, GrammarNode, grammarSpec, lexerDefinition, lexerRuleSpec, parserRuleSpec, rule, suffix } from './grammar'
 
 export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLRv4ParserVisitor<GrammarNode> {
 
@@ -86,10 +87,7 @@ export class BuildVisitor extends ParseTreeVisitor<GrammarNode> implements ANTLR
     const suffix : BlockSuffixContext = ctx.blockSuffix()
     return {
       type: 'ebnf',
-      block : {
-        type: 'ebnfList',
-        list: elements.map(altCtx => this.mapAlternative(altCtx))
-      },
+      block : elements.map(altCtx => this.mapAlternative(altCtx)),
       suffix: this.mapBlockSuffix(suffix)
     }
   }

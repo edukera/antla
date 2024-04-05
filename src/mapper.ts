@@ -5,8 +5,8 @@
  * Creation Date: 2024-03-29
  */
 
-import { alternatives, atom, ebnf, element, grammarSpec, parserRuleSpec, ruleRef, terminalDef, suffix } from "./grammar";
-import { tsType, pojo, decl, field, interfaceDecl, typeDecl, union, ref } from "./types";
+import { alternatives, atom, ebnf, element, grammarSpec, parserRuleSpec, ruleRef, suffix, terminalDef } from "./grammar";
+import { decl, field, interfaceDecl, pojo, ref, tsType, typeDecl, union } from "./types";
 import { capitalize, minimize, tokenTranslation, zip } from "./utils";
 
 /******************************************************************************
@@ -62,7 +62,7 @@ const eltToType = (elt: element, rules: rules) : tsType => {
   switch (elt.value.type) {
     case 'terminal':
       return terminalToType(elt.value, rules)
-    default: throw new Error(`eltToType: element not handled ${elt}`)
+    default: throw new Error(`eltToType: element not handled ${JSON.stringify(elt, null, 2)}`)
   }
 }
 
@@ -78,26 +78,20 @@ const altsToType = (alts: alternatives, rules: rules) : tsType => {
 }
 
 const ebnftoType = (ebnf: ebnf, rules: rules) : tsType => {
-  switch (ebnf.block.type) {
-    case 'ebnfList':
-      const types = ebnf.block.list.reduce((acc, alts) => {
-        return acc.concat(altsToType(alts, rules))
-      }, [] as tsType[])
-      return {
-        type: 'union',
-        types: types
-      }
+  const types = ebnf.block.reduce((acc, alts) => {
+    return acc.concat(altsToType(alts, rules))
+  }, [] as tsType[])
+  return {
+    type: 'union',
+    types: types
   }
 }
 
 const ebnfToName = (ebnf: ebnf, ruleName: string, rules: rules) : string => {
-  switch (ebnf.block.type) {
-    case 'ebnfList':
-      const nameComponents = ebnf.block.list.reduce((acc, alts) => {
-        return acc.concat(altToTypeName(alts, ruleName, rules))
-      }, [] as string[])
-      return nameComponents.join('')
-  }
+  const nameComponents = ebnf.block.reduce((acc, alts) => {
+    return acc.concat(altToTypeName(alts, ruleName, rules))
+  }, [] as string[])
+  return nameComponents.join('')
 }
 
 const makeEbnfTypeDecls = (g: grammarSpec, ruleName: string, rules: rules) : decl[] => {
@@ -199,7 +193,7 @@ type elementCount = {
 }
 
 const hasNodeRef = (ebnf : ebnf) : boolean => {
-  return ebnf.block.list.reduce((acc, alt) => {
+  return ebnf.block.reduce((acc, alt) => {
     return alt.reduce((acc, elt) => {
       switch (elt.value.type) {
         case 'ruleRef': return acc || true
@@ -294,7 +288,7 @@ const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   if (suffix !== undefined) {
     switch (suffix) {
       case '*':
-      case '+': // TODO: use type NonEmptyArray<T> = [T, ...T[]] for '+' ?
+      case '+': // TODO: use type ArrayOfAtLeastOne<T> = [T, ...T[]] for '+' ?
         return { ...field,
           name: field.name + 's',
           ftype: {

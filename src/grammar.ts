@@ -22,10 +22,6 @@ export interface terminalDef extends withType<'terminal'> {
   value: string
 }
 
-export interface ebnfList extends withType<'ebnfList'> {
-  list: alternatives[]
-}
-
 export interface action extends withType<'action'> {
   value: string
 }
@@ -35,7 +31,7 @@ export type atom = ruleRef | terminalDef
 export type suffix = '*' | '+' | '?'
 
 export interface ebnf extends withType<'ebnf'> {
-  block : ebnfList
+  block : alternatives[]
   suffix ?: suffix
 }
 
