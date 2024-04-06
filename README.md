@@ -28,7 +28,7 @@ The TS type of an alternatives is the *union* of each alternative.
 
 An alternative type is a *pojo*.
 
-Each elligible element generates a pojo *field*. Elligigle elements are non-unique elements:
+Each elligible element generates a pojo *field*. Elligigle elements for fields are non-unique elements:
 * parser rule
 * non unique token
 * ebnf
@@ -41,7 +41,7 @@ Naming:
 * `alternativesToName`
 * `alternativeToName`
 * `elementToName`:
-  * `ebnf`: name of dedicated generated type (concateniation of alternative names)
+  * `ebnf`: name of dedicated generated type (concatenation of alternative names)
   * `rule`: rule name
   * `token`:
     * concatenation of token names when alternatives of lexer elements
@@ -49,7 +49,7 @@ Naming:
 
 Typing:
 * `alternativesToType`
-* `alternativeToType`
+* `alternativeToType` (pojo: name and fields)
 * `elementToType`:
   * `ebnf`: reference to dedicated generated type
   * `rule`: reference to rule
@@ -58,6 +58,12 @@ Typing:
     * atomic type (`string` or `number`) when specified
 
 EBNF elements are typed as a reference type to a dedicated type.
+
+The generation of types is in two steps:
+ - fold alternatives to generate type declarations
+ - generate parser rules union
+
+The alternative folder `foldAlternative` (aka reducer) folds parser rules and ebnfs and returns a list of declarations.
 
 ## Examples
 
@@ -76,7 +82,7 @@ type prog = {
 
 Example 2:
 
-```
+```antlr
 expr:	expr ('*'|'/') expr
     |	expr ('+'|'-') expr
     |	INT
@@ -133,7 +139,6 @@ type expr = multDivExpr | plusMinusExpr | intExpr | leftBrightBrExpr
 After simplification:
 
 ```ts
-
 interface multDivPlusMinusExpr extends withType<'multDivExpr'> {
   expr1 : expr
   token : '*' | '/' | '+' | '-'
