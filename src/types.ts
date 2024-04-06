@@ -52,4 +52,3 @@ export interface typeDecl extends withType<'type'> {
 }
 
 export type decl = interfaceDecl | typeDecl
-

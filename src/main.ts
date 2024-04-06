@@ -11,7 +11,7 @@ import ANTLRv4Lexer from './ANTLRParser/ANTLRv4Lexer';
 import ANTLRv4Parser from './ANTLRParser/ANTLRv4Parser';
 import { BuildVisitor } from './visitors';
 import { grammarSpec } from './grammar';
-import { grammarToTypes } from './mapper';
+import { grammarToDecls } from './mapper';
 import { createTs } from './tscreator';
 
 function generate(filePath: string): void {
@@ -27,7 +27,7 @@ function generate(filePath: string): void {
         const builder = new BuildVisitor()
         const grammarNode : grammarSpec = builder.visit(tree) as grammarSpec
         console.log(JSON.stringify(grammarNode, null, 2))
-        const types = grammarToTypes(grammarNode)
+        const types = grammarToDecls(grammarNode)
         //console.log(JSON.stringify(types, null, 2))
         console.log(createTs(types))
     } catch (error) {
