@@ -8,32 +8,9 @@
 import { alternatives, element, grammarSpec, suffix } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
-import { capitalize, minimize } from "./utils";
+import { capitalize, minimize, withTypeDecl } from "./utils";
 
-/******************************************************************************
- * Token DataBase
- ******************************************************************************/
 const tokenDB = new tokenDataBase()
-
-/******************************************************************************
- * type withType<T> = { type: T }
- ******************************************************************************/
-const withTypeDecl : decl = {
-  type: 'type',
-  name: 'withType',
-  generic: 'T',
-  value: {
-    type: 'pojo',
-    fields: [{
-      name: 'type',
-      ftype: {
-        type: 'ref',
-        name: 'T'
-      },
-      optional: false
-    }]
-  }
-}
 
 const uniqueDecls = (decls: decl[]) : decl[] => {
   const acc: [string[], decl[]] = decls.reduce(([acc_ids, acc_decls], decl) => {
@@ -64,6 +41,17 @@ const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   } else {
     return field
   }
+}
+
+const eltToKeyword = (elt: element) : string => {
+  switch (elt.value.type) {
+    case 'terminal': {
+      if (tokenDB.isKeywork(elt.value.value)) {
+        return elt.value.value.toLowerCase()
+      }
+    }
+  }
+  return ''
 }
 
 const eltToName = (elt: element) : string => {
@@ -132,9 +120,14 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
 }
 
 const altToName = (alt: alternatives) : string => {
-  return alt.reduce((acc, elt) => {
-    return acc + capitalize(eltToName(elt))
-  }, "")
+  const keywords = alt.reduce((acc, elt) => {
+    return acc + capitalize(eltToKeyword(elt))
+  }, '')
+  if ('' === keywords) {
+    return alt.reduce((acc, elt) => {
+      return acc + capitalize(eltToName(elt))
+    }, '')
+  } else return keywords
 }
 
 const altToDecls = (alt : alternatives, rule ?: string) : [decl, decl[]] => {

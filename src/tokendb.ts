@@ -10,7 +10,7 @@ import { tsType } from "./types"
 
 export class tokenDataBase {
 
-  private translation : { [token: string]: string; } = {
+  private punctuation : { [token: string]: string; } = {
     '(' : 'lBr',
     ')' : 'rBr',
     '[' : 'lCBr',  // left square bracket
@@ -23,6 +23,7 @@ export class tokenDataBase {
     '/' : 'div',
     ':' : 'col',   // colon
     ';' : 'scol',  // semi-colon
+    ',' : 'com',
     '=' : 'eq',
     '!=' : 'nEq',
     '<>' : 'nEq',
@@ -45,68 +46,70 @@ export class tokenDataBase {
     '@' : 'at',
     '->' : 'arr',
     'eof' : 'eof',
-    '**' : 'pow',
-    ',' : 'com',
-    '+=' : 'pla',
-    '-=' : 'mina',
-    '*=' : 'mula',
-    '/=' : 'diva',
-    '@=' : 'ata',
-    '%=' : 'pera',
-    '&=' : 'epa',
-    '|=' : 'pipa',
-    '^=' : 'powa',
-    '<<=' : 'shLa',
-    '>>=' : 'shRa',
-    '**=' : 'ppowa',
-    '//=' : 'ddiva',
-    '.' : 'dot',
-    '...' : '3dot',
-    '_' : 'undsc',
-    '~' : 'tld',
-    '//' : 'ddiv',
-    'as' : 'as',
     'newline' : 'nl',
     'indent' : 'idt',
     'dedent' : 'ddt',
-    'async' : 'async',
-    'def' : 'def',
-    'del' : 'del',
-    'pass' : 'pass',
-    'break' : 'br',
-    'continue' : 'cont',
-    'return' : 'ret',
-    'raise' : 'rai',
-    'from' : 'fr',
-    'import' : 'imp',
-    'global' : 'glob',
-    'nonlocal' : 'noloc',
-    'assert' : 'asrt',
-    'if' : 'if',
-    'elif' : 'elif',
-    'else' : 'el',
-    'while' : 'whi',
-    'for' : 'for',
-    'in' : 'in',
-    'try' : 'try',
-    'finally' : 'fin',
-    'with' : 'wth',
-    'except' : 'expt',
-    'match' : 'mtch',
-    'case' : 'case',
-    'switch' : 'swch',
-    'none' : 'nne',
-    'true' : 'tru',
-    'false' : 'fls',
-    'lambda' : 'lbd',
-    'or' : 'or',
-    'and' : 'and',
-    'not' : 'not',
-    'is' : 'is',
-    "await" : 'awt',
-    'class' : 'cls',
-    'yield' : 'yld'
+    '**' : 'pow',
+    '+=' : 'apl',
+    '-=' : 'amin',
+    '*=' : 'amul',
+    '/=' : 'adiv',
+    '@=' : 'aat',
+    '%=' : 'aper',
+    '&=' : 'aep',
+    '|=' : 'apip',
+    '^=' : 'apow',
+    '<<=' : 'ashL',
+    '>>=' : 'ashR',
+    '**=' : 'appow',
+    '//=' : 'addiv',
+    '.' : 'dot',
+    '...' : 'dddot',
+    '_' : 'undsc',
+    '~' : 'tld',
+    '//' : 'ddiv'
   }
+
+  private keywords: string[] = [
+    'as',
+    'async',
+    'def',
+    'del',
+    'pass',
+    'break',
+    'continue',
+    'return',
+    'raise',
+    'from',
+    'import',
+    'global',
+    'nonlocal',
+    'assert',
+    'if',
+    'elif',
+    'else',
+    'while',
+    'for',
+    'in',
+    'try',
+    'finally',
+    'with',
+    'except',
+    'match',
+    'case',
+    'switch',
+    'none',
+    'true',
+    'false',
+    'lambda',
+    'or',
+    'and',
+    'not',
+    'is',
+    'await',
+    'class',
+    'yield'
+  ]
 
   // list of parser rule names
   private parsers: string[]
@@ -155,7 +158,9 @@ export class tokenDataBase {
   }
 
   public isMultiple(token: string) : boolean {
-    if (this.translation.hasOwnProperty(token.toLocaleLowerCase())) {
+    if (this.keywords.includes(token.toLocaleLowerCase())) {
+      return false
+    } else if (this.punctuation.hasOwnProperty(token.toLocaleLowerCase())) {
       return false
     } else if (this.tokens.hasOwnProperty(token)) {
       return false
@@ -165,19 +170,28 @@ export class tokenDataBase {
     throw new Error(`Undefined token mulitplicity '${token}'`)
   }
 
+  public isKeywork(token: string) : boolean {
+    return this.keywords.includes(token.toLocaleLowerCase())
+  }
+
   /**
    * Names token
    * @param token to translate
    * @returns
    */
   public nameToken(token: string) : string {
-    if (this.translation.hasOwnProperty(token.toLocaleLowerCase())) {
-      return this.translation[token.toLocaleLowerCase()]
+    if (this.punctuation.hasOwnProperty(token.toLocaleLowerCase())) {
+      return this.punctuation[token.toLocaleLowerCase()]
     } else return token.toLowerCase()
   }
 
   public typeToken(token: string) : tsType {
-    if (this.translation.hasOwnProperty(token.toLowerCase())) {
+    if (this.keywords.includes(token.toLowerCase())) {
+      return {
+        type: 'literal',
+        value: token
+      }
+    } else if (this.punctuation.hasOwnProperty(token.toLowerCase())) {
       return {
         type: 'literal',
         value: token
