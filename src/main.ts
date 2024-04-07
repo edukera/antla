@@ -1,5 +1,5 @@
 /**
- * Project Name: antlrMinAST
+ * Project Name: ANTLA
  * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
  * License: MIT
  * Creation Date: 2024-03-29
@@ -13,6 +13,7 @@ import { BuildVisitor } from './visitors';
 import { grammarSpec } from './grammar';
 import { grammarToDecls } from './mapper';
 import { createTs } from './tscreator';
+import { transformDecls } from './transformer';
 
 function generate(filePath: string): void {
     try {
@@ -29,7 +30,8 @@ function generate(filePath: string): void {
         console.log(JSON.stringify(grammarNode, null, 2))
         const types = grammarToDecls(grammarNode)
         //console.log(JSON.stringify(types, null, 2))
-        console.log(createTs(types))
+        const transformedTypes = transformDecls(types)
+        console.log(createTs(transformedTypes))
     } catch (error) {
         console.error('Error while reading grammar file:', error);
     }

@@ -8,9 +8,26 @@
 import { alternatives, element, grammarSpec, suffix } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
-import { capitalize, minimize, withTypeDecl } from "./utils";
+import { capitalize, minimize } from "./utils";
 
 const tokenDB = new tokenDataBase()
+
+const withTypeDecl : decl = {
+  type: 'type',
+  name: 'withType',
+  generic: 'T',
+  value: {
+    type: 'pojo',
+    fields: [{
+      name: 'type',
+      ftype: {
+        type: 'ref',
+        name: 'T'
+      },
+      optional: false
+    }]
+  }
+}
 
 const uniqueDecls = (decls: decl[]) : decl[] => {
   const acc: [string[], decl[]] = decls.reduce(([acc_ids, acc_decls], decl) => {
