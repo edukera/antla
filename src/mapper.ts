@@ -29,17 +29,6 @@ const withTypeDecl : decl = {
   }
 }
 
-const uniqueDecls = (decls: decl[]) : decl[] => {
-  const acc: [string[], decl[]] = decls.reduce(([acc_ids, acc_decls], decl) => {
-    if (acc_ids.includes(decl.name)) {
-      return [acc_ids, acc_decls]
-    } else {
-      return [acc_ids.concat(decl.name), acc_decls.concat(decl)]
-    }
-  }, [[], []] as [string[], decl[]])
-  return acc[1]
-}
-
 const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   if (suffix !== undefined) {
     switch (suffix) {
@@ -191,12 +180,12 @@ export function grammarToDecls(gSpec : grammarSpec) : decl[] {
   // initialize rule database
   tokenDB.init(gSpec)
   // generate declarations for parser rules
-  return uniqueDecls(gSpec.rules.reduce((acc, r) => {
+  return gSpec.rules.reduce((acc, r) => {
     switch (r.type) {
       case 'parserRuleSpec': {
         return acc.concat(alternativesToDecls(r.definition, r.name))
       }
       case 'lexerRuleSpec': return acc
     }
-  }, [withTypeDecl]))
+  }, [withTypeDecl])
 }
