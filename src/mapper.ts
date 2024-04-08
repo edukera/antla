@@ -75,7 +75,7 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
   switch (elt.value.type) {
     case 'ruleRef': {
       return [{
-        name: elt.value.value, // field name will dedup with a transformer
+        name: elt.value.value, // name will be dedup with a transformer
         ftype: {
           type: 'ref',
           name: elt.value.value,
@@ -108,6 +108,27 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
   return [ { name: 'dummy', ftype: { type: 'atom', name: 'boolean' }, optional: false }, []]
 }
 
+const mergeField = (f1: field, f2: field) : field => {
+  if (f1.ftype.type === 'literal' && f2.ftype.type === 'literal') {
+    return {
+      name: f1.name + f2.name,
+      ftype: {
+        type: 'literal',
+        value: f1.ftype.value + ' ' + f2.ftype.value
+      },
+      optional: f1.optional && f2.optional
+    }
+  }
+  throw new Error(`Cannot merge non terminal fields`)
+}
+
+const terminalsToField = (alt: alternatives) : field => {
+  const fields = alt.map(elt => eltToDecls(elt)[0])
+  return fields.reduce((acc, field) => {
+    return mergeField(acc, field)
+  })
+}
+
 const altToName = (alt: alternatives) : string => {
   const keywords = alt.reduce((acc, elt) => {
     return acc + capitalize(eltToKeyword(elt))
@@ -120,14 +141,21 @@ const altToName = (alt: alternatives) : string => {
 }
 
 const altToDecls = (alt : alternatives, rule ?: string) : [decl, decl[]] => {
-  const [fields, decls] = alt.reduce(([acc_fields, acc_decls], elt) => {
-    if (isMultiple(elt) || alt.length === 1) {
-      const [field, ebnf_decls] = eltToDecls(elt)
-      return [acc_fields.concat(applySuffix(field, elt.suffix)), acc_decls.concat(ebnf_decls)]
-    } else {
-      return [acc_fields, acc_decls]
-    }
-  }, [[], []] as [field[], decl[]])
+  // need to agglutinate non multiple tokens
+  const allNonMultiple = alt.every(elt => !isMultiple(elt))
+  var [fields, decls] : [field[], decl[]] = [[], []]
+  if (allNonMultiple && alt.length > 1) {
+    fields.push(terminalsToField(alt))
+  } else {
+    [fields, decls] = alt.reduce(([acc_fields, acc_decls], elt) => {
+      if (isMultiple(elt) || alt.length === 1) {
+        const [field, ebnf_decls] = eltToDecls(elt)
+        return [acc_fields.concat(applySuffix(field, elt.suffix)), acc_decls.concat(ebnf_decls)]
+      } else {
+        return [acc_fields, acc_decls]
+      }
+    }, [[], []] as [field[], decl[]])
+  }
   const baseName = altToName(alt)
   const name = baseName + capitalize(rule ?? '')
   const decl : decl = {

@@ -572,6 +572,7 @@ interface IMultWildcard_patternStar_pattern extends withType<"MultWildcard_patte
 }
 type mapping_pattern = ILCBrRCBrMapping_pattern | ILCBrDouble_star_patternComRCBrMapping_pattern | ILCBrItems_patternComDouble_star_patternComRCBrMapping_pattern | ILCBrItems_patternComRCBrMapping_pattern;
 interface ILCBrRCBrMapping_pattern extends withType<"LCBrRCBrMapping_pattern"> {
+    lCBrrCBr: "{ }";
 }
 interface ILCBrDouble_star_patternComRCBrMapping_pattern extends withType<"LCBrDouble_star_patternComRCBrMapping_pattern"> {
     double_star_pattern: double_star_pattern;
@@ -680,38 +681,9 @@ type comparison = {
     comp_opExprs: Comp_opExpr[];
 };
 type Comp_opExpr = {
-    comp_op: comp_op;
+    comp_op: "<" | ">" | "==" | ">=" | "<=" | "<>" | "<>" | "in" | "not in" | "is" | "is not";
     expr: expr;
 };
-type comp_op = ILTComp_op | IGTComp_op | IIsEqComp_op | IGTEqComp_op | ILTEqComp_op | INEqComp_op | INEqComp_op | IInComp_op | INotInComp_op | IIsComp_op | IIsNotComp_op;
-interface ILTComp_op extends withType<"LTComp_op"> {
-    lT: "<";
-}
-interface IGTComp_op extends withType<"GTComp_op"> {
-    gT: ">";
-}
-interface IIsEqComp_op extends withType<"IsEqComp_op"> {
-    isEq: "==";
-}
-interface IGTEqComp_op extends withType<"GTEqComp_op"> {
-    gTEq: ">=";
-}
-interface ILTEqComp_op extends withType<"LTEqComp_op"> {
-    lTEq: "<=";
-}
-interface INEqComp_op extends withType<"NEqComp_op"> {
-    nEq: "<>";
-}
-interface IInComp_op extends withType<"InComp_op"> {
-    in: "in";
-}
-interface INotInComp_op extends withType<"NotInComp_op"> {
-}
-interface IIsComp_op extends withType<"IsComp_op"> {
-    is: "is";
-}
-interface IIsNotComp_op extends withType<"IsNotComp_op"> {
-}
 type star_expr = expr;
 type expr = IAtom_exprExpr | IExprPowExprExpr | IPlusMinTldExprExpr | IExprMultAtDivModDdivExprExpr | IExprPlusMinExprExpr | IExprShLShRExprExpr | IExprAndExprExpr | IExprXorExprExpr | IExprOrExprExpr;
 interface IAtom_exprExpr extends withType<"Atom_exprExpr"> {
@@ -850,9 +822,7 @@ type testlist = {
     test: test;
     comTests: ComTest[];
 };
-type dictorsetmaker = TestColTestPowExprComp_forComTestColTestPowExprComTestStar_exprComp_forComTestStar_exprCom;
-type TestColTestPowExprComp_forComTestColTestPowExprComTestStar_exprComp_forComTestStar_exprCom = ITestColTestPowExprComp_forComTestColTestPowExprCom | ITestStar_exprComp_forComTestStar_exprCom;
-type TestColTestPowExprComp_forComTestColTestPowExprCom = ITestColTestPowExprComp_forComTestColTestPowExprCom;
+type dictorsetmaker = ITestColTestPowExprComp_forComTestColTestPowExprCom | ITestStar_exprComp_forComTestStar_exprCom;
 type TestColTestPowExpr = ITestColTest | IPowExpr;
 interface ITestColTest extends withType<"TestColTest"> {
     test1: test;
@@ -870,7 +840,6 @@ interface ITestColTestPowExprComp_forComTestColTestPowExprCom extends withType<"
     testColTestPowExpr: TestColTestPowExpr;
     comp_forComTestColTestPowExprCom: Comp_forComTestColTestPowExprCom;
 }
-type TestStar_exprComp_forComTestStar_exprCom = ITestStar_exprComp_forComTestStar_exprCom;
 interface ITestStar_exprComp_forComTestStar_exprCom extends withType<"TestStar_exprComp_forComTestStar_exprCom"> {
     testStar_expr: TestStar_expr;
     comp_forComTestStar_exprCom: Comp_forComTestStar_exprCom;
