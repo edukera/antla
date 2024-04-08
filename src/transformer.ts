@@ -4,7 +4,7 @@
  * License: MIT
  * Creation Date: 2024-04-07
  */
-import { decl, field, interfaceDecl, pojo, ref, stringliteral } from "./types"
+import { array, decl, field, interfaceDecl, pojo, ref, stringliteral, tsType, union } from "./types"
 import { pipeline } from "./utils"
 
 /******************************************************************************
@@ -20,9 +20,104 @@ const getDecl = (name : string, decls: decl[]) : decl => {
   throw new Error(`Cannot find decl '${name}'`)
 }
 
+const isSimpleType = (typ: tsType) : boolean => {
+  switch (typ.type) {
+    case 'literal':
+    case 'atom': return true
+    case 'union': {
+      return typ.types.every(isSimpleType)
+    }
+  }
+  return false
+}
+
+const mapRef = (typ: tsType, refToType: { (r: ref) : tsType }) : tsType => {
+  switch (typ.type) {
+    case 'ref': return refToType(typ)
+    case 'array': return { ...typ,
+      arg: mapRef(typ.arg, refToType)
+    }
+    case 'pojo': return { ...typ,
+      fields: typ.fields.map(field => {
+        return { ...field,
+          ftype: mapRef(field.ftype, refToType)
+        }
+      })
+    }
+    case 'union': return { ...typ,
+      types: typ.types.map(t => mapRef(t, refToType))
+    }
+  }
+  return typ
+}
+
+const countRef = (typ: tsType, name: string) : number => {
+  switch (typ.type) {
+    case 'ref': {
+      return (typ.name === name) ? 1 : 0
+    }
+    case 'array': return countRef(typ.arg, name)
+    case 'pojo': return typ.fields.reduce((acc, field) => {
+        return acc + countRef(field.ftype, name)
+      }, 0)
+    case 'union': return typ.types.reduce((acc, t) => {
+      return acc + countRef(t, name)
+    }, 0)
+  }
+  return 0
+}
+
+const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
+  return decls.filter(decl => !toberemoved.includes(decl.name))
+}
+
 /******************************************************************************
  * Transformers
  ******************************************************************************/
+
+/**
+ * Inlines simples types: a simple type is either an union of literal, or an atomic type
+ * For example from 'Expr.g4':
+ * type TimesDiv = "*" | "/";
+ * interface expressionTimesDivExpression extends withType<"expressionTimesDivExpression"> {
+ *     expression1: expression;
+ *     TimesDiv: TimesDiv;
+ *     expression2: expression;
+ * }
+ * is simplified to:
+  * interface expressionTimesDivExpression extends withType<"expressionTimesDivExpression"> {
+ *     expression1: expression;
+ *     TimesDiv: "*" | "/";
+ *     expression2: expression;
+ * }
+ * @param decls
+ * @returns
+ */
+const inlineSimpleTypes = (decls: decl[]) : decl[] => {
+  // list simple types to inline
+  const simpleTypes = decls.filter(decl => {
+      switch (decl.type) {
+        case 'type': {
+          return isSimpleType(decl.value)
+        }
+      }
+      return false
+  })
+  const tobeInlined = simpleTypes.reduce((acc, decl) => {
+    acc[decl.name] = decl.value
+    return acc
+  }, {} as { [key: string] : tsType })
+  const refto = (tobeInlined: { [key: string] : tsType }) => (ref: ref) : tsType => {
+    if (tobeInlined[ref.name] === undefined) {
+      return ref
+    } else {
+      return tobeInlined[ref.name]
+    }
+  }
+  return removeDecls(decls, simpleTypes.map(decl => decl.name)).map(decl => {
+    return { ...decl, value: mapRef(decl.value, refto(tobeInlined)) } as decl
+  })
+}
 
 /**
  * Simplies pojo types with single field. For example from 'Expr.g4':
@@ -89,8 +184,8 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
             const literals = interfaces.reduce((lit_acc, decl) => {
               switch (decl.type) {
                 case 'interface': {
-                  if (decl.fields.length === 1 && decl.fields[0].ftype.type === 'literal') {
-                    return lit_acc.concat(decl.fields[0].ftype)
+                  if (decl.value.fields.length === 1 && decl.value.fields[0].ftype.type === 'literal') {
+                    return lit_acc.concat(decl.value.fields[0].ftype)
                   }
                 }
               }
@@ -132,6 +227,7 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
  * type file_ = {
  *   equations: equation[];
  * }
+ * Warning! it is mandatory to check that the single interface is not used by anywhere else!
  * @param decls
  * @returns simplified list of declarations
  */
@@ -142,18 +238,23 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
         switch (decl.value.type) {
           case 'union': {
             if (decl.value.types.length === 1) {
-              // trigger simplification
               const name = (decl.value.types[0] as ref).name
-              const interf = getDecl(name, decls) as interfaceDecl
-              // transmute union to pojo
-              const pojo : pojo = {
-                type: 'pojo',
-                fields: interf.fields
+              const nbOccurences = decls.reduce((acc, decl) => {
+                return acc + countRef(decl.value, name)
+              }, 0)
+              if (nbOccurences === 1) {
+                // trigger simplification
+                const interf = getDecl(name, decls) as interfaceDecl
+                // transmute union to pojo
+                const pojo : pojo = {
+                  type: 'pojo',
+                  fields: interf.value.fields
+                }
+                const new_decl : decl = { ...decl,
+                  value: pojo
+                }
+                return [acc.concat(new_decl), removed.concat(name)]
               }
-              const new_decl : decl = { ...decl,
-                value: pojo
-              }
-              return [acc.concat(new_decl), removed.concat(name)]
             }
           }
         }
@@ -193,7 +294,7 @@ const fixUniqueFields = (decls: decl[]) : decl[] => {
   return decls.map(decl => {
     switch (decl.type) {
       case 'interface': {
-        const counts = decl.fields.reduce((acc, field, i) => {
+        const counts = decl.value.fields.reduce((acc, field, i) => {
           if (undefined === acc[field.name]) {
             acc[field.name] = [i]
           } else {
@@ -202,10 +303,12 @@ const fixUniqueFields = (decls: decl[]) : decl[] => {
           return acc
         }, {} as { [key: string] : number[] })
         return { ...decl,
-          fields: decl.fields.reduce((acc, field, i) => {
-            const name = field.name + (counts[field.name].length === 1 ? '' : '' + (counts[field.name].indexOf(i)+1))
-            return acc.concat({ ...field, name: name })
-          }, [] as field[])
+          value: { type: 'pojo',
+            fields: decl.value.fields.reduce((acc, field, i) => {
+              const name = field.name + (counts[field.name].length === 1 ? '' : '' + (counts[field.name].indexOf(i)+1))
+              return acc.concat({ ...field, name: name })
+            }, [] as field[])
+          }
         }
       }
       default: return decl
@@ -229,12 +332,39 @@ const fixUniqueDecls = (decls: decl[]) : decl[] => {
   return acc[1]
 }
 
+/**
+ * withType type must escape all tranforms
+ * @param decls
+ * @returns
+ */
+const addWithType = (decls: decl[]) : decl[] => {
+  const withTypeDecl : decl = {
+    type: 'type',
+    name: 'withType',
+    generic: 'T',
+    value: {
+      type: 'pojo',
+      fields: [{
+        name: 'type',
+        ftype: {
+          type: 'ref',
+          name: 'T'
+        },
+        optional: false
+      }]
+    }
+  }
+  return [withTypeDecl, ...decls]
+}
+
 export const transformDecls = (decls: decl[]) : decl[] => {
   return pipeline<decl[]>(
     fixUniqueDecls,       // mandatory
     fixUniqueFields,      // mandatory
     simplifySingleUnion,
     simplifyLiteralUnion,
-    simplifySingleFieldPojo
+    simplifySingleFieldPojo,
+    inlineSimpleTypes,
+    addWithType
   )(decls)
 }

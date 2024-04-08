@@ -40,7 +40,7 @@ const createFromField = (field: field) => {
   return factory.createPropertySignature(
     undefined,
     factory.createIdentifier(field.name),
-    undefined,
+    field.optional ? factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
     createFromTSType(field.ftype)
   )
 }
@@ -72,7 +72,7 @@ const createFromInterface = (decl: interfaceDecl) => {
         decl.extends.genericarg ? [factory.createLiteralTypeNode(factory.createStringLiteral(decl.extends.genericarg))] : undefined
       )]
     )]: undefined,
-    decl.fields.map(createFromField)
+    decl.value.fields.map(createFromField)
   )
 }
 

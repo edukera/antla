@@ -42,7 +42,7 @@ export type tsType = pojo | union | ref | atom | array | stringliteral
 export interface interfaceDecl extends withType<'interface'> {
   name: string
   extends?: ref
-  fields: field[]
+  value: pojo
 }
 
 export interface typeDecl extends withType<'type'> {

@@ -24,10 +24,10 @@ function generate(filePath: string): void {
         const tokens = new CommonTokenStream(lexer);
         const parser = new ANTLRv4Parser(tokens);
         const tree = parser.grammarSpec();
-        console.log(tree.toStringTree(parser.ruleNames,parser))
+        //console.log(tree.toStringTree(parser.ruleNames,parser))
         const builder = new BuildVisitor()
         const grammarNode : grammarSpec = builder.visit(tree) as grammarSpec
-        console.log(JSON.stringify(grammarNode, null, 2))
+        //console.log(JSON.stringify(grammarNode, null, 2))
         const types = grammarToDecls(grammarNode)
         //console.log(JSON.stringify(types, null, 2))
         const transformedTypes = transformDecls(types)
@@ -40,5 +40,5 @@ function generate(filePath: string): void {
 // Utilisation de la fonction 'generate'
 // Remplacez './chemin/vers/votre/fichier.txt' par le chemin réel du fichier que vous souhaitez lire
 //generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/ExprSimple.g4');
-generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Expr.g4');
-//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Python3Parser.g4');
+//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Expr.g4');
+generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Python3Parser.g4');

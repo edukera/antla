@@ -12,23 +12,6 @@ import { capitalize, minimize } from "./utils";
 
 const tokenDB = new tokenDataBase()
 
-const withTypeDecl : decl = {
-  type: 'type',
-  name: 'withType',
-  generic: 'T',
-  value: {
-    type: 'pojo',
-    fields: [{
-      name: 'type',
-      ftype: {
-        type: 'ref',
-        name: 'T'
-      },
-      optional: false
-    }]
-  }
-}
-
 const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   if (suffix !== undefined) {
     switch (suffix) {
@@ -113,7 +96,7 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
       const decls = alternativesToDecls(elt.value.block)
       const name = decls[0].name
       return [applySuffix({
-        name: name,
+        name: minimize(name),
         ftype: {
           type: 'ref',
           name: name
@@ -146,11 +129,11 @@ const altToDecls = (alt : alternatives, rule ?: string) : [decl, decl[]] => {
     }
   }, [[], []] as [field[], decl[]])
   const baseName = altToName(alt)
-  const name = minimize(baseName) + capitalize(rule ?? '')
+  const name = baseName + capitalize(rule ?? '')
   const decl : decl = {
     type: 'interface',
     name: name,
-    fields: fields,
+    value: { type: 'pojo', fields : fields },
     extends: { type: 'ref', name: 'withType', genericarg: name }
   }
   return [decl, decls]
@@ -160,7 +143,8 @@ const alternativesToDecls = (alternatives: alternatives[], rule ?: string) : [de
   const [decls, otherdecls, name] = alternatives.reduce(([acc_decls, acc_others, acc_name], alt) => {
     const [decl, others] = altToDecls(alt, rule)
     const name = acc_name + capitalize(decl.name)
-    return [acc_decls.concat(decl), acc_others.concat(others), name]
+    const idecl = { ...decl, name: 'I' + decl.name }
+    return [acc_decls.concat(idecl), acc_others.concat(others), name]
   }, [[], [], ''] as [decl[], decl[], string])
   const decl = {
     type: 'type',
@@ -187,5 +171,5 @@ export function grammarToDecls(gSpec : grammarSpec) : decl[] {
       }
       case 'lexerRuleSpec': return acc
     }
-  }, [withTypeDecl])
+  }, [] as decl[])
 }
