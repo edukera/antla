@@ -68,11 +68,10 @@ const countRef = (typ: tsType, name: string) : number => {
   return 0
 }
 
-const isUsed = (decls: decl[], name: string) : boolean => {
-  const nbrefs = decls.reduce((acc, decl) => {
+const countRefInDecls = (decls: decl[], name: string) : number => {
+  return decls.reduce((acc, decl) => {
     return acc + countRef(decl.value, name)
   }, 0)
-  return 0 < nbrefs
 }
 
 const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
@@ -82,6 +81,38 @@ const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
 /******************************************************************************
  * Transformers
  ******************************************************************************/
+
+/**
+ * Simplifies the following situation:
+ * type A = B
+ * type B = <...>
+ * to
+ * type A = <...> when B is not used anywhere
+ */
+const simplifiesSingleType = (decls: decl[]) : decl[] => {
+  const res : [decl[], string[]] = decls.reduce(([acc, toBeRemoved], decl) => {
+    switch (decl.type) {
+      case 'type': {
+        switch (decl.value.type) {
+          case 'ref': {
+            // is ref type used somewhere else ?
+            const name = decl.value.name
+            const count = countRefInDecls(decls, name)
+            if (count === 1) {
+              // replace current ref by referenced definition
+              const referenced = getDecl(name, decls)
+              return [acc.concat({ ...decl,
+                value: referenced.value
+              }), toBeRemoved.concat(name)]
+            }
+          }
+        }
+      }
+    }
+    return [acc.concat(decl), toBeRemoved]
+  }, [[], []] as [decl[], string[]])
+  return removeDecls(res[0], res[1])
+}
 
 /**
  * Inlines simples types: a simple type is either an union of literal, or an atomic type
@@ -373,6 +404,7 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     simplifyLiteralUnion,
     simplifySingleFieldPojo,
     inlineSimpleTypes,
+    simplifiesSingleType,
     addWithType           // mandatory, final
   )(decls)
 }

@@ -53,8 +53,7 @@ type ArrTest = test;
 type parameters = {
     typedargslist?: typedargslist;
 };
-type typedargslist = TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
-type TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom = ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark | IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
+type typedargslist = ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark | IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
 type EqTest = test;
 type ComTfpdefEqTestQmark = {
     tfpdef: tfpdef;
@@ -87,8 +86,7 @@ type tfpdef = {
     colTest?: ColTest;
 };
 type ColTest = test;
-type varargslist = VfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmarkMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefCom;
-type VfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmarkMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefCom = IVfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmark | IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark | IPowVfpdefCom;
+type varargslist = IVfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmark | IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark | IPowVfpdefCom;
 type ComVfpdefEqTestQmark = {
     vfpdef: vfpdef;
     eqTest?: EqTest;
@@ -132,8 +130,7 @@ type simple_stmts = {
     scolSimple_stmts: ScolSimple_stmt[];
 };
 type ScolSimple_stmt = simple_stmt;
-type simple_stmt = Expr_stmtDel_stmtPass_stmtFlow_stmtImport_stmtGlobal_stmtNonlocal_stmtAssert_stmt;
-type Expr_stmtDel_stmtPass_stmtFlow_stmtImport_stmtGlobal_stmtNonlocal_stmtAssert_stmt = IExpr_stmt | IDel_stmt | IPass_stmt | IFlow_stmt | IImport_stmt | IGlobal_stmt | INonlocal_stmt | IAssert_stmt;
+type simple_stmt = IExpr_stmt | IDel_stmt | IPass_stmt | IFlow_stmt | IImport_stmt | IGlobal_stmt | INonlocal_stmt | IAssert_stmt;
 interface IExpr_stmt extends withType<"Expr_stmt"> {
     expr_stmt: expr_stmt;
 }
@@ -170,8 +167,7 @@ interface IYield_expr extends withType<"Yield_expr"> {
 interface ITestlist extends withType<"Testlist"> {
     testlist: testlist;
 }
-type EqYield_exprTestlist_star_expr = Yield_exprTestlist_star_expr;
-type Yield_exprTestlist_star_expr = IYield_expr | ITestlist_star_expr;
+type EqYield_exprTestlist_star_expr = IYield_expr | ITestlist_star_expr;
 interface ITestlist_star_expr extends withType<"Testlist_star_expr"> {
     testlist_star_expr: testlist_star_expr;
 }
@@ -238,9 +234,11 @@ interface IImport_nameImport_stmt extends withType<"Import_nameImport_stmt"> {
 interface IImport_fromImport_stmt extends withType<"Import_fromImport_stmt"> {
     import_from: import_from;
 }
-type import_name = dotted_as_names;
-type import_from = FromImport;
-type FromImport = {
+type import_name = {
+    dotted_as_name: dotted_as_name;
+    comDotted_as_names: ComDotted_as_name[];
+};
+type import_from = {
     dotDddotStarDotted_nameDotDddotPlus: DotDddotStarDotted_nameDotDddotPlus;
     multLBrImport_as_namesRBrImport_as_names: MultLBrImport_as_namesRBrImport_as_names;
 };
@@ -276,10 +274,6 @@ type import_as_names = {
     comImport_as_names: ComImport_as_name[];
 };
 type ComImport_as_name = import_as_name;
-type dotted_as_names = {
-    dotted_as_name: dotted_as_name;
-    comDotted_as_names: ComDotted_as_name[];
-};
 type ComDotted_as_name = dotted_as_name;
 type dotted_name = {
     name: name;
@@ -331,8 +325,7 @@ interface IAsync_stmtCompound_stmt extends withType<"Async_stmtCompound_stmt"> {
 interface IMatch_stmtCompound_stmt extends withType<"Match_stmtCompound_stmt"> {
     match_stmt: match_stmt;
 }
-type async_stmt = FuncdefWith_stmtFor_stmt;
-type FuncdefWith_stmtFor_stmt = IFuncdef | IWith_stmt | IFor_stmt;
+type async_stmt = IFuncdef | IWith_stmt | IFor_stmt;
 interface IWith_stmt extends withType<"With_stmt"> {
     with_stmt: with_stmt;
 }
@@ -361,8 +354,7 @@ type for_stmt = {
     block: block;
     else?: Else;
 };
-type try_stmt = Try;
-type Try = {
+type try_stmt = {
     block: block;
     except_clauseColBlockPlusElseQmarkFinallyQmarkFinally: Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally;
 };
@@ -838,8 +830,7 @@ type testlist = {
     test: test;
     comTests: ComTest[];
 };
-type dictorsetmaker = TestColTestPowExprComp_forComTestColTestPowExprStarComTestStar_exprComp_forComTestStar_exprStarCom;
-type TestColTestPowExprComp_forComTestColTestPowExprStarComTestStar_exprComp_forComTestStar_exprStarCom = ITestColTestPowExprComp_forComTestColTestPowExprStarCom | ITestStar_exprComp_forComTestStar_exprStarCom;
+type dictorsetmaker = ITestColTestPowExprComp_forComTestColTestPowExprStarCom | ITestStar_exprComp_forComTestStar_exprStarCom;
 type TestColTestPowExprComp_forComTestColTestPowExprStarCom = ITestColTestPowExprComp_forComTestColTestPowExprStarCom;
 type TestColTestPowExpr = ITestColTest | IPowExpr;
 interface ITestColTest extends withType<"TestColTest"> {
@@ -873,8 +864,7 @@ type arglist = {
     comArguments: ComArgument[];
 };
 type ComArgument = argument;
-type argument = TestComp_forTestEqTestPowTestMultTest;
-type TestComp_forTestEqTestPowTestMultTest = ITestComp_for | ITestEqTest | IPowTest | IMultTest;
+type argument = ITestComp_for | ITestEqTest | IPowTest | IMultTest;
 interface ITestComp_for extends withType<"TestComp_for"> {
     test: test;
     comp_for?: comp_for;
