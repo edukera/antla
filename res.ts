@@ -24,7 +24,9 @@ type decorator = {
     dotted_name: dotted_name;
     lBrArglistRBr?: LBrArglistRBr;
 };
-type LBrArglistRBr = arglist;
+type LBrArglistRBr = {
+    arglist?: arglist;
+};
 type decorators = decorator[];
 type decorated = {
     decorators: decorators;
@@ -48,7 +50,9 @@ type funcdef = {
     block: block;
 };
 type ArrTest = test;
-type parameters = typedargslist;
+type parameters = {
+    typedargslist?: typedargslist;
+};
 type typedargslist = TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
 type TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom = ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark | IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
 type EqTest = test;
@@ -56,9 +60,13 @@ type ComTfpdefEqTestQmark = {
     tfpdef: tfpdef;
     eqTest?: EqTest;
 };
-type ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark = MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
+type ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark = {
+    multTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom?: MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
+};
 type MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom = IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
-type ComPowTfpdefComQmark = PowTfpdefCom;
+type ComPowTfpdefComQmark = {
+    powTfpdefCom?: PowTfpdefCom;
+};
 type PowTfpdefCom = IPowTfpdefCom;
 interface IPowTfpdefCom extends withType<"PowTfpdefCom"> {
     tfpdef: tfpdef;
@@ -85,9 +93,13 @@ type ComVfpdefEqTestQmark = {
     vfpdef: vfpdef;
     eqTest?: EqTest;
 };
-type ComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmark = MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark;
+type ComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmark = {
+    multVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark?: MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark;
+};
 type MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark = IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark | IPowVfpdefComQmark;
-type ComPowVfpdefComQmark = PowVfpdefCom;
+type ComPowVfpdefComQmark = {
+    powVfpdefCom?: PowVfpdefCom;
+};
 type PowVfpdefCom = IPowVfpdefCom;
 interface IPowVfpdefCom extends withType<"PowVfpdefCom"> {
     vfpdef: vfpdef;
@@ -207,9 +219,13 @@ interface IRaise_stmtFlow_stmt extends withType<"Raise_stmtFlow_stmt"> {
 interface IYield_stmtFlow_stmt extends withType<"Yield_stmtFlow_stmt"> {
     yield_stmt: yield_stmt;
 }
-type return_stmt = testlist;
+type return_stmt = {
+    testlist?: testlist;
+};
 type yield_stmt = yield_expr;
-type raise_stmt = TestFromQmark;
+type raise_stmt = {
+    testFromQmark?: TestFromQmark;
+};
 type TestFromQmark = {
     test: test;
     from?: From;
@@ -374,7 +390,9 @@ type with_item = {
     test: test;
     as?: As;
 };
-type except_clause = TestAsQmark;
+type except_clause = {
+    testAsQmark?: TestAsQmark;
+};
 type TestAsQmark = {
     test: test;
     as?: As;
@@ -804,7 +822,9 @@ interface ITestColTestSliceopSubscript_ extends withType<"TestColTestSliceopSubs
     test2?: test;
     sliceop?: sliceop;
 }
-type sliceop = test;
+type sliceop = {
+    test?: test;
+};
 type exprlist = {
     exprStar_expr: ExprStar_expr;
     comExprStar_exprs: ComExprStar_expr[];
@@ -886,7 +906,9 @@ type comp_if = {
     comp_iter?: comp_iter;
 };
 type encoding_decl = name;
-type yield_expr = yield_arg;
+type yield_expr = {
+    yield_arg?: yield_arg;
+};
 type yield_arg = IFromYield_arg | ITestlistYield_arg;
 interface IFromYield_arg extends withType<"FromYield_arg"> {
     test: test;

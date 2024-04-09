@@ -143,7 +143,7 @@ const simplifySingleFieldPojo = (decls: decl[]) : decl[] => {
       case 'type': {
         switch (decl.value.type) {
           case 'pojo': {
-            if (decl.value.fields.length === 1) {
+            if (decl.value.fields.length === 1 && decl.value.fields[0].optional === false) {
               // transmute pojo to ref
               return acc.concat({ ...decl,
                 value: decl.value.fields[0].ftype
