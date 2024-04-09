@@ -4,6 +4,7 @@
  * License: MIT
  * Creation Date: 2024-04-07
  */
+import { count } from "console"
 import { array, decl, field, interfaceDecl, pojo, ref, stringliteral, tsType, union } from "./types"
 import { pipeline } from "./utils"
 
@@ -65,6 +66,13 @@ const countRef = (typ: tsType, name: string) : number => {
     }, 0)
   }
   return 0
+}
+
+const isUsed = (decls: decl[], name: string) : boolean => {
+  const nbrefs = decls.reduce((acc, decl) => {
+    return acc + countRef(decl.value, name)
+  }, 0)
+  return 0 < nbrefs
 }
 
 const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
@@ -365,6 +373,10 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     simplifyLiteralUnion,
     simplifySingleFieldPojo,
     inlineSimpleTypes,
-    addWithType
+    addWithType           // mandatory, final
   )(decls)
 }
+
+// EqYield_exprTestlist_star_expr
+// encoding_decl
+// TestColTestPowExprComp_forComTestColTestPowExprComTestStar_exprComp_forComTestStar_exprCom

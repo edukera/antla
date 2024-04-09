@@ -49,59 +49,63 @@ type funcdef = {
 };
 type ArrTest = test;
 type parameters = typedargslist;
-type typedargslist = TfpdefEqTestComTfpdefEqTestComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom;
-type TfpdefEqTestComTfpdefEqTestComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom = ITfpdefEqTestComTfpdefEqTestComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom | IMultTfpdefComTfpdefEqTestComPowTfpdefCom | IPowTfpdefCom;
+type typedargslist = TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
+type TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmarkMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom = ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark | IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
 type EqTest = test;
-type ComTfpdefEqTest = {
+type ComTfpdefEqTestQmark = {
     tfpdef: tfpdef;
     eqTest?: EqTest;
 };
-type ComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom = MultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom;
-type MultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom = IMultTfpdefComTfpdefEqTestComPowTfpdefCom | IPowTfpdefCom;
-type ComPowTfpdefCom = PowTfpdefCom;
+type ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark = MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom;
+type MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefCom = IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark | IPowTfpdefCom;
+type ComPowTfpdefComQmark = PowTfpdefCom;
 type PowTfpdefCom = IPowTfpdefCom;
 interface IPowTfpdefCom extends withType<"PowTfpdefCom"> {
     tfpdef: tfpdef;
 }
-interface IMultTfpdefComTfpdefEqTestComPowTfpdefCom extends withType<"MultTfpdefComTfpdefEqTestComPowTfpdefCom"> {
+interface IMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark extends withType<"MultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmark"> {
     tfpdef?: tfpdef;
-    comTfpdefEqTests: ComTfpdefEqTest[];
-    comPowTfpdefCom?: ComPowTfpdefCom;
+    comTfpdefEqTestQmarks: ComTfpdefEqTestQmark[];
+    comPowTfpdefComQmark?: ComPowTfpdefComQmark;
 }
-interface ITfpdefEqTestComTfpdefEqTestComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom extends withType<"TfpdefEqTestComTfpdefEqTestComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom"> {
+interface ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark extends withType<"TfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark"> {
     tfpdef: tfpdef;
     eqTest?: EqTest;
-    comTfpdefEqTests: ComTfpdefEqTest[];
-    comMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom?: ComMultTfpdefComTfpdefEqTestComPowTfpdefComPowTfpdefCom;
+    comTfpdefEqTestQmarks: ComTfpdefEqTestQmark[];
+    comMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark?: ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark;
 }
 type tfpdef = {
     name: name;
     colTest?: ColTest;
 };
 type ColTest = test;
-type varargslist = VfpdefEqTestComVfpdefEqTestComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom;
-type VfpdefEqTestComVfpdefEqTestComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom = IVfpdefEqTestComVfpdefEqTestComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom | IMultVfpdefComVfpdefEqTestComPowVfpdefCom | IPowVfpdefCom;
-type ComVfpdefEqTest = {
+type varargslist = VfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmarkMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefCom;
+type VfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmarkMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefCom = IVfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmark | IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark | IPowVfpdefCom;
+type ComVfpdefEqTestQmark = {
     vfpdef: vfpdef;
     eqTest?: EqTest;
 };
-type ComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom = MultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom;
-type MultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom = IMultVfpdefComVfpdefEqTestComPowVfpdefCom | IPowVfpdefCom;
-type ComPowVfpdefCom = PowVfpdefCom;
+type ComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmark = MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark;
+type MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmark = IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark | IPowVfpdefComQmark;
+type ComPowVfpdefComQmark = PowVfpdefCom;
 type PowVfpdefCom = IPowVfpdefCom;
 interface IPowVfpdefCom extends withType<"PowVfpdefCom"> {
     vfpdef: vfpdef;
 }
-interface IMultVfpdefComVfpdefEqTestComPowVfpdefCom extends withType<"MultVfpdefComVfpdefEqTestComPowVfpdefCom"> {
+interface IMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark extends withType<"MultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmark"> {
     vfpdef?: vfpdef;
-    comVfpdefEqTests: ComVfpdefEqTest[];
-    comPowVfpdefCom?: ComPowVfpdefCom;
+    comVfpdefEqTestQmarks: ComVfpdefEqTestQmark[];
+    comPowVfpdefComQmark?: ComPowVfpdefComQmark;
 }
-interface IVfpdefEqTestComVfpdefEqTestComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom extends withType<"VfpdefEqTestComVfpdefEqTestComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom"> {
+interface IPowVfpdefComQmark extends withType<"PowVfpdefComQmark"> {
+    vfpdef: vfpdef;
+    com?: ",";
+}
+interface IVfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmark extends withType<"VfpdefEqTestQmarkComVfpdefEqTestQmarkStarComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmarkQmark"> {
     vfpdef: vfpdef;
     eqTest?: EqTest;
-    comVfpdefEqTests: ComVfpdefEqTest[];
-    comMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom?: ComMultVfpdefComVfpdefEqTestComPowVfpdefComPowVfpdefCom;
+    comVfpdefEqTestQmarks: ComVfpdefEqTestQmark[];
+    comMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmark?: ComMultVfpdefComVfpdefEqTestQmarkStarComPowVfpdefComQmarkQmarkPowVfpdefComQmarkQmark;
 }
 type vfpdef = name;
 type stmt = ISimple_stmtsStmt | ICompound_stmtStmt;
@@ -144,9 +148,9 @@ interface IAssert_stmt extends withType<"Assert_stmt"> {
 }
 type expr_stmt = {
     testlist_star_expr: testlist_star_expr;
-    annassignAugassignYield_exprTestlistEqYield_exprTestlist_star_expr: AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_expr;
+    annassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar: AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar;
 };
-type AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_expr = IAnnassign | IAugassignYield_exprTestlist | IEqYield_exprTestlist_star_expr;
+type AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar = IAnnassign | IAugassignYield_exprTestlist | IEqYield_exprTestlist_star_exprStar;
 type Yield_exprTestlist = IYield_expr | ITestlist;
 interface IYield_expr extends withType<"Yield_expr"> {
     yield_expr: yield_expr;
@@ -154,13 +158,10 @@ interface IYield_expr extends withType<"Yield_expr"> {
 interface ITestlist extends withType<"Testlist"> {
     testlist: testlist;
 }
-type EqYield_exprTestlist_star_expr = IEqYield_exprTestlist_star_expr;
+type EqYield_exprTestlist_star_expr = Yield_exprTestlist_star_expr;
 type Yield_exprTestlist_star_expr = IYield_expr | ITestlist_star_expr;
 interface ITestlist_star_expr extends withType<"Testlist_star_expr"> {
     testlist_star_expr: testlist_star_expr;
-}
-interface IEqYield_exprTestlist_star_expr extends withType<"EqYield_exprTestlist_star_expr"> {
-    yield_exprTestlist_star_expr: Yield_exprTestlist_star_expr;
 }
 interface IAnnassign extends withType<"Annassign"> {
     annassign: annassign;
@@ -168,6 +169,9 @@ interface IAnnassign extends withType<"Annassign"> {
 interface IAugassignYield_exprTestlist extends withType<"AugassignYield_exprTestlist"> {
     augassign: augassign;
     yield_exprTestlist: Yield_exprTestlist;
+}
+interface IEqYield_exprTestlist_star_exprStar extends withType<"EqYield_exprTestlist_star_exprStar"> {
+    eqYield_exprTestlist_star_exprs: EqYield_exprTestlist_star_expr[];
 }
 type annassign = {
     test: test;
@@ -205,8 +209,8 @@ interface IYield_stmtFlow_stmt extends withType<"Yield_stmtFlow_stmt"> {
 }
 type return_stmt = testlist;
 type yield_stmt = yield_expr;
-type raise_stmt = TestFrom;
-type TestFrom = {
+type raise_stmt = TestFromQmark;
+type TestFromQmark = {
     test: test;
     from?: From;
 };
@@ -221,15 +225,15 @@ interface IImport_fromImport_stmt extends withType<"Import_fromImport_stmt"> {
 type import_name = dotted_as_names;
 type import_from = FromImport;
 type FromImport = {
-    dotDddotDotted_nameDotDddot: DotDddotDotted_nameDotDddot;
+    dotDddotStarDotted_nameDotDddotPlus: DotDddotStarDotted_nameDotDddotPlus;
     multLBrImport_as_namesRBrImport_as_names: MultLBrImport_as_namesRBrImport_as_names;
 };
-type DotDddotDotted_nameDotDddot = IDotDddotDotted_name | IDotDddot;
-interface IDotDddotDotted_name extends withType<"DotDddotDotted_name"> {
+type DotDddotStarDotted_nameDotDddotPlus = IDotDddotStarDotted_name | IDotDddotPlus;
+interface IDotDddotStarDotted_name extends withType<"DotDddotStarDotted_name"> {
     dotDddots: ("." | "...")[];
     dotted_name: dotted_name;
 }
-interface IDotDddot extends withType<"DotDddot"> {
+interface IDotDddotPlus extends withType<"DotDddotPlus"> {
     dotDddots: ("." | "...")[];
 }
 type MultLBrImport_as_namesRBrImport_as_names = IMult | ILBrImport_as_namesRBr | IImport_as_names;
@@ -344,9 +348,9 @@ type for_stmt = {
 type try_stmt = Try;
 type Try = {
     block: block;
-    except_clauseColBlockElseFinallyFinally: Except_clauseColBlockElseFinallyFinally;
+    except_clauseColBlockPlusElseQmarkFinallyQmarkFinally: Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally;
 };
-type Except_clauseColBlockElseFinallyFinally = IExcept_clauseColBlockElseFinally | IFinally;
+type Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally = IExcept_clauseColBlockPlusElseQmarkFinallyQmark | IFinally;
 type Except_clauseColBlock = {
     except_clause: except_clause;
     block: block;
@@ -355,7 +359,7 @@ type Finally = IFinally;
 interface IFinally extends withType<"Finally"> {
     block: block;
 }
-interface IExcept_clauseColBlockElseFinally extends withType<"Except_clauseColBlockElseFinally"> {
+interface IExcept_clauseColBlockPlusElseQmarkFinallyQmark extends withType<"Except_clauseColBlockPlusElseQmarkFinallyQmark"> {
     except_clauseColBlocks: Except_clauseColBlock[];
     else?: Else;
     finally?: Finally;
@@ -370,8 +374,8 @@ type with_item = {
     test: test;
     as?: As;
 };
-type except_clause = TestAs;
-type TestAs = {
+type except_clause = TestAsQmark;
+type TestAsQmark = {
     test: test;
     as?: As;
 };
@@ -456,10 +460,9 @@ interface IMapping_patternClosed_pattern extends withType<"Mapping_patternClosed
 interface IClass_patternClosed_pattern extends withType<"Class_patternClosed_pattern"> {
     class_pattern: class_pattern;
 }
-type literal_pattern = ISigned_numberDummyLiteral_pattern | IComplex_numberLiteral_pattern | IStringsLiteral_pattern | INoneLiteral_pattern | ITrueLiteral_pattern | IFalseLiteral_pattern;
-interface ISigned_numberDummyLiteral_pattern extends withType<"Signed_numberDummyLiteral_pattern"> {
+type literal_pattern = ISigned_numberLiteral_pattern | IComplex_numberLiteral_pattern | IStringsLiteral_pattern | INoneLiteral_pattern | ITrueLiteral_pattern | IFalseLiteral_pattern;
+interface ISigned_numberLiteral_pattern extends withType<"Signed_numberLiteral_pattern"> {
     signed_number: signed_number;
-    dummy: boolean;
 }
 interface IComplex_numberLiteral_pattern extends withType<"Complex_numberLiteral_pattern"> {
     complex_number: complex_number;
@@ -476,10 +479,9 @@ interface ITrueLiteral_pattern extends withType<"TrueLiteral_pattern"> {
 interface IFalseLiteral_pattern extends withType<"FalseLiteral_pattern"> {
     false: "False";
 }
-type literal_expr = ISigned_numberDummyLiteral_expr | IComplex_numberLiteral_expr | IStringsLiteral_expr | INoneLiteral_expr | ITrueLiteral_expr | IFalseLiteral_expr;
-interface ISigned_numberDummyLiteral_expr extends withType<"Signed_numberDummyLiteral_expr"> {
+type literal_expr = ISigned_numberLiteral_expr | IComplex_numberLiteral_expr | IStringsLiteral_expr | INoneLiteral_expr | ITrueLiteral_expr | IFalseLiteral_expr;
+interface ISigned_numberLiteral_expr extends withType<"Signed_numberLiteral_expr"> {
     signed_number: signed_number;
-    dummy: boolean;
 }
 interface IComplex_numberLiteral_expr extends withType<"Complex_numberLiteral_expr"> {
     complex_number: complex_number;
@@ -520,14 +522,8 @@ interface IMinReal_numberSigned_real_number extends withType<"MinReal_numberSign
     real_number: number;
 }
 type capture_pattern = pattern_capture_target;
-type pattern_capture_target = {
-    name: name;
-    dummy: boolean;
-};
-type value_pattern = {
-    attr: attr;
-    dummy: boolean;
-};
+type pattern_capture_target = name;
+type value_pattern = attr;
 type attr = {
     name: name;
     dotNames: DotName[];
@@ -632,12 +628,12 @@ type keyword_pattern = {
     name: name;
     pattern: pattern;
 };
-type test = IOr_testIfElseTest | ILambdefTest;
+type test = IOr_testIfElseQmarkTest | ILambdefTest;
 type IfElse = {
     or_test: or_test;
     test: test;
 };
-interface IOr_testIfElseTest extends withType<"Or_testIfElseTest"> {
+interface IOr_testIfElseQmarkTest extends withType<"Or_testIfElseQmarkTest"> {
     or_test: or_test;
     ifElse?: IfElse;
 }
@@ -685,7 +681,7 @@ type Comp_opExpr = {
     expr: expr;
 };
 type star_expr = expr;
-type expr = IAtom_exprExpr | IExprPowExprExpr | IPlusMinTldExprExpr | IExprMultAtDivModDdivExprExpr | IExprPlusMinExprExpr | IExprShLShRExprExpr | IExprAndExprExpr | IExprXorExprExpr | IExprOrExprExpr;
+type expr = IAtom_exprExpr | IExprPowExprExpr | IPlusMinTldPlusExprExpr | IExprMultAtDivModDdivExprExpr | IExprPlusMinExprExpr | IExprShLShRExprExpr | IExprAndExprExpr | IExprXorExprExpr | IExprOrExprExpr;
 interface IAtom_exprExpr extends withType<"Atom_exprExpr"> {
     atom_expr: atom_expr;
 }
@@ -693,7 +689,7 @@ interface IExprPowExprExpr extends withType<"ExprPowExprExpr"> {
     expr1: expr;
     expr2: expr;
 }
-interface IPlusMinTldExprExpr extends withType<"PlusMinTldExprExpr"> {
+interface IPlusMinTldPlusExprExpr extends withType<"PlusMinTldPlusExprExpr"> {
     plusMinTlds: ("+" | "-" | "~")[];
     expr: expr;
 }
@@ -728,12 +724,12 @@ type atom_expr = {
     atom: atom;
     trailers: trailer[];
 };
-type atom = ILBrYield_exprTestlist_compRBrAtom | ILCBrTestlist_compRCBrAtom | ILCBrDictorsetmakerRCBrAtom | INameAtom | INumberAtom | IStringAtom | IDddotAtom | INoneAtom | ITrueAtom | IFalseAtom;
+type atom = ILBrYield_exprTestlist_compQmarkRBrAtom | ILCBrTestlist_compRCBrAtom | ILCBrDictorsetmakerRCBrAtom | INameAtom | INumberAtom | IStringAtom | IDddotAtom | INoneAtom | ITrueAtom | IFalseAtom;
 type Yield_exprTestlist_comp = IYield_expr | ITestlist_comp;
 interface ITestlist_comp extends withType<"Testlist_comp"> {
     testlist_comp: testlist_comp;
 }
-interface ILBrYield_exprTestlist_compRBrAtom extends withType<"LBrYield_exprTestlist_compRBrAtom"> {
+interface ILBrYield_exprTestlist_compQmarkRBrAtom extends withType<"LBrYield_exprTestlist_compQmarkRBrAtom"> {
     yield_exprTestlist_comp?: Yield_exprTestlist_comp;
 }
 interface ILCBrTestlist_compRCBrAtom extends withType<"LCBrTestlist_compRCBrAtom"> {
@@ -775,13 +771,13 @@ interface IMatchName extends withType<"MatchName"> {
 }
 type testlist_comp = {
     testStar_expr: TestStar_expr;
-    comp_forComTestStar_exprCom: Comp_forComTestStar_exprCom;
+    comp_forComTestStar_exprStarCom: Comp_forComTestStar_exprStarCom;
 };
-type Comp_forComTestStar_exprCom = IComp_for | IComTestStar_exprCom;
+type Comp_forComTestStar_exprStarCom = IComp_for | IComTestStar_exprStarCom;
 interface IComp_for extends withType<"Comp_for"> {
     comp_for: comp_for;
 }
-interface IComTestStar_exprCom extends withType<"ComTestStar_exprCom"> {
+interface IComTestStar_exprStarCom extends withType<"ComTestStar_exprStarCom"> {
     comTestStar_exprs: ComTestStar_expr[];
 }
 type trailer = ILBrArglistRBrTrailer | ILCBrSubscriptlistRCBrTrailer | IDotNameTrailer;
@@ -822,7 +818,9 @@ type testlist = {
     test: test;
     comTests: ComTest[];
 };
-type dictorsetmaker = ITestColTestPowExprComp_forComTestColTestPowExprCom | ITestStar_exprComp_forComTestStar_exprCom;
+type dictorsetmaker = TestColTestPowExprComp_forComTestColTestPowExprStarComTestStar_exprComp_forComTestStar_exprStarCom;
+type TestColTestPowExprComp_forComTestColTestPowExprStarComTestStar_exprComp_forComTestStar_exprStarCom = ITestColTestPowExprComp_forComTestColTestPowExprStarCom | ITestStar_exprComp_forComTestStar_exprStarCom;
+type TestColTestPowExprComp_forComTestColTestPowExprStarCom = ITestColTestPowExprComp_forComTestColTestPowExprStarCom;
 type TestColTestPowExpr = ITestColTest | IPowExpr;
 interface ITestColTest extends withType<"TestColTest"> {
     test1: test;
@@ -831,18 +829,19 @@ interface ITestColTest extends withType<"TestColTest"> {
 interface IPowExpr extends withType<"PowExpr"> {
     expr: expr;
 }
-type Comp_forComTestColTestPowExprCom = IComp_for | IComTestColTestPowExprCom;
+type Comp_forComTestColTestPowExprStarCom = IComp_for | IComTestColTestPowExprStarCom;
 type ComTestColTestPowExpr = TestColTestPowExpr;
-interface IComTestColTestPowExprCom extends withType<"ComTestColTestPowExprCom"> {
+interface IComTestColTestPowExprStarCom extends withType<"ComTestColTestPowExprStarCom"> {
     comTestColTestPowExprs: ComTestColTestPowExpr[];
 }
-interface ITestColTestPowExprComp_forComTestColTestPowExprCom extends withType<"TestColTestPowExprComp_forComTestColTestPowExprCom"> {
+interface ITestColTestPowExprComp_forComTestColTestPowExprStarCom extends withType<"TestColTestPowExprComp_forComTestColTestPowExprStarCom"> {
     testColTestPowExpr: TestColTestPowExpr;
-    comp_forComTestColTestPowExprCom: Comp_forComTestColTestPowExprCom;
+    comp_forComTestColTestPowExprStarCom: Comp_forComTestColTestPowExprStarCom;
 }
-interface ITestStar_exprComp_forComTestStar_exprCom extends withType<"TestStar_exprComp_forComTestStar_exprCom"> {
+type TestStar_exprComp_forComTestStar_exprStarCom = ITestStar_exprComp_forComTestStar_exprStarCom;
+interface ITestStar_exprComp_forComTestStar_exprStarCom extends withType<"TestStar_exprComp_forComTestStar_exprStarCom"> {
     testStar_expr: TestStar_expr;
-    comp_forComTestStar_exprCom: Comp_forComTestStar_exprCom;
+    comp_forComTestStar_exprStarCom: Comp_forComTestStar_exprStarCom;
 }
 type classdef = {
     name: name;

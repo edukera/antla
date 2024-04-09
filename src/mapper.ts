@@ -43,6 +43,14 @@ const eltToKeyword = (elt: element) : string => {
   return ''
 }
 
+const suffixToName = (suffix: suffix) : string => {
+  switch (suffix) {
+    case '*': return 'Star'
+    case '+': return 'Plus'
+    case '?': return 'Qmark'
+  }
+}
+
 const eltToName = (elt: element) : string => {
   switch (elt.value.type) {
     case 'terminal': {
@@ -55,10 +63,10 @@ const eltToName = (elt: element) : string => {
       const alternatives = elt.value.block
       return alternatives.reduce((acc, alt) => {
         return acc + altToName(alt)
-      }, "")
+      }, "") + (elt.value.suffix ? suffixToName(elt.value.suffix) : '')
     }
+    case 'action': return ''
   }
-  return "dummy"
 }
 
 const isMultiple = (elt: element) : boolean => {
@@ -67,6 +75,7 @@ const isMultiple = (elt: element) : boolean => {
       const token = elt.value.value
       return tokenDB.isMultiple(token)
     }
+    case 'action': return false
   }
   return true
 }
@@ -104,8 +113,8 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
         optional: false
       }, elt.value.suffix), decls]
     }
+    case 'action': throw new Error(`Action to decl not handled: '${JSON.stringify(elt)}'`)
   }
-  return [ { name: 'dummy', ftype: { type: 'atom', name: 'boolean' }, optional: false }, []]
 }
 
 const mergeField = (f1: field, f2: field) : field => {
