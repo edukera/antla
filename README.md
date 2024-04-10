@@ -18,7 +18,62 @@ An alternative, just like an EBNF, generates a *pojo* (aka record) type.
 
 ### Alternatives Naming
 
-The basename for alternatives is the concatenation of each alternative name. An alternative name is also the concatenation of elements.
+The basename for alternatives is the concatenation of each alternative name. An alternative name is also the concatenation of elements (see [`punctuation`](./src/tokendb.ts) dictionary for tokens).
+
+Concatenation is only feasible when the alternative is not too complex. When it is, it is necessary to have another strategy.
+
+For example the following rule 'typedargslist' from Python" grammar:
+
+```
+typedargslist
+    : (
+        tfpdef ('=' test)? (',' tfpdef ('=' test)?)* (
+            ',' (
+                '*' tfpdef? (',' tfpdef ('=' test)?)* (',' ('**' tfpdef ','?)?)?
+                | '**' tfpdef ','?
+            )?
+        )?
+        | '*' tfpdef? (',' tfpdef ('=' test)?)* (',' ('**' tfpdef ','?)?)?
+        | '**' tfpdef ','?
+    )
+    ;
+
+```
+
+generates the following type name:
+`ITfpdefEqTestQmarkComTfpdefEqTestQmarkStarComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmarkQmark` for the first alternative ...
+
+The idea here is to base the naming of an alternative on its structural complexity (number of components and/or depth of ebnf structure ...)
+
+Typically the third alternative `'**' tfpdef ','?` is simple, and the generated name by concatenation is manageable: `IPowTfpdefCom`.
+
+In the above example, we need to rely on the `typedargslist`
+
+```ts
+type typedargslist = Itypedargslist1 | Itypedargslist2 | IPowTfpdefCom
+```
+
+The naming question is partially answered. The `Itypedargslist1` type is an interface with 4 fields. The last field is for the following complex ebnf:
+
+```
+(
+  '*' tfpdef? (',' tfpdef ('=' test)?)* (',' ('**' tfpdef ','?)?)?
+  | '**' tfpdef ','?
+)
+```
+
+With concatenation strategy, the field/type name would be `ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark` ...
+
+Hence the naming strategy here is to use the interface name suffixed by `_field<idx>` as illustrated below:
+
+```ts
+interface Itypedargslist1 extends withType<"Itypedargslist1"> {
+    tfpdef: tfpdef;
+    eqTest?: EqTest;
+    comTfpdefEqTestQmarks: ComTfpdefEqTestQmark[];
+    typedargslist1_field4?: Itypedargslist1_field4;
+}
+```
 
 For Parser rules, the alternatives name is over-written by the rule name.
 
