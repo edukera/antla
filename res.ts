@@ -1,3 +1,4 @@
+
 type withType<T> = {
     type: T;
 };
@@ -28,10 +29,6 @@ type LBrArglistRBr = {
     arglist?: arglist;
 };
 type decorators = decorator[];
-type decorated = {
-    decorators: decorators;
-    classdefFuncdefAsync_funcdef: ClassdefFuncdefAsync_funcdef;
-};
 type ClassdefFuncdefAsync_funcdef = IClassdef | IFuncdef | IAsync_funcdef;
 interface IClassdef extends withType<"Classdef"> {
     classdef: classdef;
@@ -132,7 +129,8 @@ type simple_stmts = {
 type ScolSimple_stmt = simple_stmt;
 type simple_stmt = IExpr_stmt | IDel_stmt | IPass_stmt | IFlow_stmt | IImport_stmt | IGlobal_stmt | INonlocal_stmt | IAssert_stmt;
 interface IExpr_stmt extends withType<"Expr_stmt"> {
-    expr_stmt: expr_stmt;
+    testlist_star_expr: testlist_star_expr;
+    annassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar: AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar;
 }
 interface IDel_stmt extends withType<"Del_stmt"> {
     del_stmt: del_stmt;
@@ -147,18 +145,17 @@ interface IImport_stmt extends withType<"Import_stmt"> {
     import_stmt: import_stmt;
 }
 interface IGlobal_stmt extends withType<"Global_stmt"> {
-    global_stmt: global_stmt;
+    name: name;
+    comNames: ComName[];
 }
 interface INonlocal_stmt extends withType<"Nonlocal_stmt"> {
-    nonlocal_stmt: nonlocal_stmt;
+    name: name;
+    comNames: ComName[];
 }
 interface IAssert_stmt extends withType<"Assert_stmt"> {
-    assert_stmt: assert_stmt;
+    test: test;
+    comTest?: ComTest;
 }
-type expr_stmt = {
-    testlist_star_expr: testlist_star_expr;
-    annassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar: AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar;
-};
 type AnnassignAugassignYield_exprTestlistEqYield_exprTestlist_star_exprStar = IAnnassign | IAugassignYield_exprTestlist | IEqYield_exprTestlist_star_exprStar;
 type Yield_exprTestlist = IYield_expr | ITestlist;
 interface IYield_expr extends withType<"Yield_expr"> {
@@ -172,7 +169,8 @@ interface ITestlist_star_expr extends withType<"Testlist_star_expr"> {
     testlist_star_expr: testlist_star_expr;
 }
 interface IAnnassign extends withType<"Annassign"> {
-    annassign: annassign;
+    test: test;
+    eqTest?: EqTest;
 }
 interface IAugassignYield_exprTestlist extends withType<"AugassignYield_exprTestlist"> {
     augassign: augassign;
@@ -181,10 +179,6 @@ interface IAugassignYield_exprTestlist extends withType<"AugassignYield_exprTest
 interface IEqYield_exprTestlist_star_exprStar extends withType<"EqYield_exprTestlist_star_exprStar"> {
     eqYield_exprTestlist_star_exprs: EqYield_exprTestlist_star_expr[];
 }
-type annassign = {
-    test: test;
-    eqTest?: EqTest;
-};
 type testlist_star_expr = {
     testStar_expr: TestStar_expr;
     comTestStar_exprs: ComTestStar_expr[];
@@ -207,21 +201,15 @@ interface IContinue_stmtFlow_stmt extends withType<"Continue_stmtFlow_stmt"> {
     continue_stmt: "continue";
 }
 interface IReturn_stmtFlow_stmt extends withType<"Return_stmtFlow_stmt"> {
-    return_stmt: return_stmt;
+    testlist?: testlist;
 }
 interface IRaise_stmtFlow_stmt extends withType<"Raise_stmtFlow_stmt"> {
-    raise_stmt: raise_stmt;
+    testFromQmark?: TestFromQmark;
 }
 interface IYield_stmtFlow_stmt extends withType<"Yield_stmtFlow_stmt"> {
     yield_stmt: yield_stmt;
 }
-type return_stmt = {
-    testlist?: testlist;
-};
 type yield_stmt = yield_expr;
-type raise_stmt = {
-    testFromQmark?: TestFromQmark;
-};
 type TestFromQmark = {
     test: test;
     from?: From;
@@ -229,19 +217,13 @@ type TestFromQmark = {
 type From = test;
 type import_stmt = IImport_nameImport_stmt | IImport_fromImport_stmt;
 interface IImport_nameImport_stmt extends withType<"Import_nameImport_stmt"> {
-    import_name: import_name;
-}
-interface IImport_fromImport_stmt extends withType<"Import_fromImport_stmt"> {
-    import_from: import_from;
-}
-type import_name = {
     dotted_as_name: dotted_as_name;
     comDotted_as_names: ComDotted_as_name[];
-};
-type import_from = {
+}
+interface IImport_fromImport_stmt extends withType<"Import_fromImport_stmt"> {
     dotDddotStarDotted_nameDotDddotPlus: DotDddotStarDotted_nameDotDddotPlus;
     multLBrImport_as_namesRBrImport_as_names: MultLBrImport_as_namesRBrImport_as_names;
-};
+}
 type DotDddotStarDotted_nameDotDddotPlus = IDotDddotStarDotted_name | IDotDddotPlus;
 interface IDotDddotStarDotted_name extends withType<"DotDddotStarDotted_name"> {
     dotDddots: ("." | "...")[];
@@ -280,32 +262,26 @@ type dotted_name = {
     dotNames: DotName[];
 };
 type DotName = name;
-type global_stmt = {
-    name: name;
-    comNames: ComName[];
-};
 type ComName = name;
-type nonlocal_stmt = {
-    name: name;
-    comNames: ComName[];
-};
-type assert_stmt = {
-    test: test;
-    comTest?: ComTest;
-};
 type ComTest = test;
 type compound_stmt = IIf_stmtCompound_stmt | IWhile_stmtCompound_stmt | IFor_stmtCompound_stmt | ITry_stmtCompound_stmt | IWith_stmtCompound_stmt | IFuncdefCompound_stmt | IClassdefCompound_stmt | IDecoratedCompound_stmt | IAsync_stmtCompound_stmt | IMatch_stmtCompound_stmt;
 interface IIf_stmtCompound_stmt extends withType<"If_stmtCompound_stmt"> {
-    if_stmt: if_stmt;
+    test: test;
+    block: block;
+    elifs: Elif[];
+    else?: Else;
 }
 interface IWhile_stmtCompound_stmt extends withType<"While_stmtCompound_stmt"> {
-    while_stmt: while_stmt;
+    test: test;
+    block: block;
+    else?: Else;
 }
 interface IFor_stmtCompound_stmt extends withType<"For_stmtCompound_stmt"> {
     for_stmt: for_stmt;
 }
 interface ITry_stmtCompound_stmt extends withType<"Try_stmtCompound_stmt"> {
-    try_stmt: try_stmt;
+    block: block;
+    except_clauseColBlockPlusElseQmarkFinallyQmarkFinally: Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally;
 }
 interface IWith_stmtCompound_stmt extends withType<"With_stmtCompound_stmt"> {
     with_stmt: with_stmt;
@@ -317,13 +293,15 @@ interface IClassdefCompound_stmt extends withType<"ClassdefCompound_stmt"> {
     classdef: classdef;
 }
 interface IDecoratedCompound_stmt extends withType<"DecoratedCompound_stmt"> {
-    decorated: decorated;
+    decorators: decorators;
+    classdefFuncdefAsync_funcdef: ClassdefFuncdefAsync_funcdef;
 }
 interface IAsync_stmtCompound_stmt extends withType<"Async_stmtCompound_stmt"> {
     async_stmt: async_stmt;
 }
 interface IMatch_stmtCompound_stmt extends withType<"Match_stmtCompound_stmt"> {
-    match_stmt: match_stmt;
+    subject_expr: subject_expr;
+    case_blocks: case_block[];
 }
 type async_stmt = IFuncdef | IWith_stmt | IFor_stmt;
 interface IWith_stmt extends withType<"With_stmt"> {
@@ -332,31 +310,16 @@ interface IWith_stmt extends withType<"With_stmt"> {
 interface IFor_stmt extends withType<"For_stmt"> {
     for_stmt: for_stmt;
 }
-type if_stmt = {
-    test: test;
-    block: block;
-    elifs: Elif[];
-    else?: Else;
-};
 type Elif = {
     test: test;
     block: block;
 };
 type Else = block;
-type while_stmt = {
-    test: test;
-    block: block;
-    else?: Else;
-};
 type for_stmt = {
     exprlist: exprlist;
     testlist: testlist;
     block: block;
     else?: Else;
-};
-type try_stmt = {
-    block: block;
-    except_clauseColBlockPlusElseQmarkFinallyQmarkFinally: Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally;
 };
 type Except_clauseColBlockPlusElseQmarkFinallyQmarkFinally = IExcept_clauseColBlockPlusElseQmarkFinallyQmark | IFinally;
 type Except_clauseColBlock = {
@@ -396,10 +359,6 @@ interface ISimple_stmtsBlock extends withType<"Simple_stmtsBlock"> {
 interface INlIdtStmtDdtBlock extends withType<"NlIdtStmtDdtBlock"> {
     stmts: stmt[];
 }
-type match_stmt = {
-    subject_expr: subject_expr;
-    case_blocks: case_block[];
-};
 type subject_expr = IStar_named_expressionComStar_named_expressionsSubject_expr | ITestSubject_expr;
 interface IStar_named_expressionComStar_named_expressionsSubject_expr extends withType<"Star_named_expressionComStar_named_expressionsSubject_expr"> {
     star_named_expression: star_named_expression;
@@ -431,15 +390,12 @@ interface IPatternPatterns extends withType<"PatternPatterns"> {
 }
 type pattern = IAs_patternPattern | IOr_patternPattern;
 interface IAs_patternPattern extends withType<"As_patternPattern"> {
-    as_pattern: as_pattern;
+    or_pattern: or_pattern;
+    pattern_capture_target: pattern_capture_target;
 }
 interface IOr_patternPattern extends withType<"Or_patternPattern"> {
     or_pattern: or_pattern;
 }
-type as_pattern = {
-    or_pattern: or_pattern;
-    pattern_capture_target: pattern_capture_target;
-};
 type or_pattern = {
     closed_pattern: closed_pattern;
     orClosed_patterns: OrClosed_pattern[];
@@ -648,23 +604,17 @@ interface IOr_testIfElseQmarkTest extends withType<"Or_testIfElseQmarkTest"> {
     ifElse?: IfElse;
 }
 interface ILambdefTest extends withType<"LambdefTest"> {
-    lambdef: lambdef;
+    varargslist?: varargslist;
+    test: test;
 }
 type test_nocond = IOr_testTest_nocond | ILambdef_nocondTest_nocond;
 interface IOr_testTest_nocond extends withType<"Or_testTest_nocond"> {
     or_test: or_test;
 }
 interface ILambdef_nocondTest_nocond extends withType<"Lambdef_nocondTest_nocond"> {
-    lambdef_nocond: lambdef_nocond;
-}
-type lambdef = {
-    varargslist?: varargslist;
-    test: test;
-};
-type lambdef_nocond = {
     varargslist?: varargslist;
     test_nocond: test_nocond;
-};
+}
 type or_test = {
     and_test: and_test;
     ors: Or[];
@@ -680,12 +630,9 @@ interface INotNot_test extends withType<"NotNot_test"> {
     not_test: not_test;
 }
 interface IComparisonNot_test extends withType<"ComparisonNot_test"> {
-    comparison: comparison;
-}
-type comparison = {
     expr: expr;
     comp_opExprs: Comp_opExpr[];
-};
+}
 type Comp_opExpr = {
     comp_op: "<" | ">" | "==" | ">=" | "<=" | "<>" | "<>" | "in" | "not in" | "is" | "is not";
     expr: expr;
@@ -693,7 +640,8 @@ type Comp_opExpr = {
 type star_expr = expr;
 type expr = IAtom_exprExpr | IExprPowExprExpr | IPlusMinTldPlusExprExpr | IExprMultAtDivModDdivExprExpr | IExprPlusMinExprExpr | IExprShLShRExprExpr | IExprAndExprExpr | IExprXorExprExpr | IExprOrExprExpr;
 interface IAtom_exprExpr extends withType<"Atom_exprExpr"> {
-    atom_expr: atom_expr;
+    atom: atom;
+    trailers: trailer[];
 }
 interface IExprPowExprExpr extends withType<"ExprPowExprExpr"> {
     expr1: expr;
@@ -730,10 +678,6 @@ interface IExprOrExprExpr extends withType<"ExprOrExprExpr"> {
     expr1: expr;
     expr2: expr;
 }
-type atom_expr = {
-    atom: atom;
-    trailers: trailer[];
-};
 type atom = ILBrYield_exprTestlist_compQmarkRBrAtom | ILCBrTestlist_compRCBrAtom | ILCBrDictorsetmakerRCBrAtom | INameAtom | INumberAtom | IStringAtom | IDddotAtom | INoneAtom | ITrueAtom | IFalseAtom;
 type Yield_exprTestlist_comp = IYield_expr | ITestlist_comp;
 interface ITestlist_comp extends withType<"Testlist_comp"> {
@@ -795,15 +739,12 @@ interface ILBrArglistRBrTrailer extends withType<"LBrArglistRBrTrailer"> {
     arglist?: arglist;
 }
 interface ILCBrSubscriptlistRCBrTrailer extends withType<"LCBrSubscriptlistRCBrTrailer"> {
-    subscriptlist: subscriptlist;
+    subscript_: subscript_;
+    comSubscript_s: ComSubscript_[];
 }
 interface IDotNameTrailer extends withType<"DotNameTrailer"> {
     name: name;
 }
-type subscriptlist = {
-    subscript_: subscript_;
-    comSubscript_s: ComSubscript_[];
-};
 type ComSubscript_ = subscript_;
 type subscript_ = ITestSubscript_ | ITestColTestSliceopSubscript_;
 interface ITestSubscript_ extends withType<"TestSubscript_"> {
@@ -884,15 +825,12 @@ interface IComp_forComp_iter extends withType<"Comp_forComp_iter"> {
     comp_for: comp_for;
 }
 interface IComp_ifComp_iter extends withType<"Comp_ifComp_iter"> {
-    comp_if: comp_if;
+    test_nocond: test_nocond;
+    comp_iter?: comp_iter;
 }
 type comp_for = {
     exprlist: exprlist;
     or_test: or_test;
-    comp_iter?: comp_iter;
-};
-type comp_if = {
-    test_nocond: test_nocond;
     comp_iter?: comp_iter;
 };
 type encoding_decl = name;

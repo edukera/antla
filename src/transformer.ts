@@ -83,6 +83,64 @@ const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
  ******************************************************************************/
 
 /**
+ * Inlines type in interface in the following situation:
+ * interface I extends<> {
+ *   f: t
+ * }
+ * type t = {
+ *   f1: T1
+ *   f2: T2
+ * }
+ * is simplified to:
+ * interface I extends<> {
+ *   f1: T1
+ *   f2: T2
+ * }
+ * It is necessary that t is not used somewhere else (i.e. countRefs === 1)
+ * @param decls
+ * @returns
+ */
+const inlineFieldSingleType = (decls: decl[]) : decl[] => {
+  // for interface with a single field
+  const res : [decl[], string[]] = decls.reduce(([acc, toBeRemoved], decl) => {
+    switch (decl.type) {
+      case 'interface': {
+        const res : [field[], string[]] = decl.value.fields.reduce(([acc_fields, fieldToBeRemoved], field) => {
+          // check field type
+          switch (field.ftype.type) {
+            case 'ref': {
+              // check if ref type is used only here
+              const count = countRefInDecls(decls, field.ftype.name)
+              if (count === 1 && field.optional === false) {
+                // inline
+                const refDecl = getDecl(field.ftype.name, decls)
+                switch (refDecl.type) {
+                  case 'type': {
+                    switch (refDecl.value.type) {
+                      case 'pojo': {
+                        return [acc_fields.concat(refDecl.value.fields), fieldToBeRemoved.concat(field.ftype.name)]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          return [acc_fields.concat(field), fieldToBeRemoved]
+        }, [[], toBeRemoved] as [field[], string[]])
+        return [acc.concat({ ...decl,
+          value: { ...decl.value,
+            fields: res[0]
+          }
+        }), res[1]]
+      }
+    }
+    return [acc.concat(decl), toBeRemoved]
+  }, [[], []] as [decl[], string[]])
+  return removeDecls(res[0], res[1])
+}
+
+/**
  * Simplifies the following situation:
  * type A = B
  * type B = <...>
@@ -405,6 +463,7 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     simplifySingleFieldPojo,
     inlineSimpleTypes,
     simplifiesSingleType,
+    inlineFieldSingleType,
     addWithType           // mandatory, final
   )(decls)
 }

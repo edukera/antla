@@ -60,6 +60,8 @@ const eltToName = (elt: element) : string => {
       return elt.value.value
     }
     case 'ebnf': {
+      // need to cut naming down to "ebnf"
+      //return 'ebnf' + (elt.value.suffix ? suffixToName(elt.value.suffix) : '')
       const alternatives = elt.value.block
       return alternatives.reduce((acc, alt) => {
         return acc + altToName(alt)
