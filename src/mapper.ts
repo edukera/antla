@@ -5,12 +5,32 @@
  * Creation Date: 2024-03-29
  */
 
-import { alternatives, element, grammarSpec, suffix } from "./grammar";
+import { alternatives, element, grammarSpec, rule, suffix, withType } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
 import { capitalize, minimize } from "./utils";
 
 const tokenDB = new tokenDataBase()
+
+/**
+ * Rule path
+ */
+
+interface rule_path extends withType<'rule'> {
+  name: string
+}
+interface alt_path extends withType<"alt"> {
+  index: number
+}
+interface ebnf_path extends withType<'ebnf'> {}
+
+type path_elt = rule_path | alt_path | ebnf_path
+
+type path = path_elt[]
+
+const mkRulePath = (name: string) : path => [{ type: 'rule', name: name }]
+const addAltPath = (path: path, idx: number) : path => path.concat({ type: 'alt', index: idx })
+const addEbnfPath = (path: path) : path => path.concat({ type: 'ebnf' })
 
 const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   if (suffix !== undefined) {
@@ -32,42 +52,42 @@ const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   }
 }
 
-const eltToKeyword = (elt: element) : string => {
+const eltToKeyword = (elt: element) : string[] => {
   switch (elt.value.type) {
     case 'terminal': {
       if (tokenDB.isKeywork(elt.value.value)) {
-        return elt.value.value.toLowerCase()
+        return [elt.value.value.toLowerCase()]
       }
     }
   }
-  return ''
+  return []
 }
 
 const suffixToName = (suffix: suffix) : string => {
   switch (suffix) {
-    case '*': return 'Star'
-    case '+': return 'Plus'
-    case '?': return 'Qmark'
+    case '*': return 'star'
+    case '+': return 'plus'
+    case '?': return 'qmark'
   }
 }
 
-const eltToName = (elt: element) : string => {
+const eltToNameComponents = (elt: element) : string[] => {
   switch (elt.value.type) {
     case 'terminal': {
-      return tokenDB.nameToken(elt.value.value)
+      return [tokenDB.nameToken(elt.value.value)]
     }
     case 'ruleRef': {
-      return elt.value.value
+      return [elt.value.value]
     }
     case 'ebnf': {
       // need to cut naming down to "ebnf"
       //return 'ebnf' + (elt.value.suffix ? suffixToName(elt.value.suffix) : '')
       const alternatives = elt.value.block
       return alternatives.reduce((acc, alt) => {
-        return acc + altToName(alt)
-      }, "") + (elt.value.suffix ? suffixToName(elt.value.suffix) : '')
+        return acc.concat(altToNameComponents(alt))
+      }, [] as string[]).concat(elt.value.suffix ? [suffixToName(elt.value.suffix)] : [])
     }
-    case 'action': return ''
+    case 'action': return []
   }
 }
 
@@ -82,7 +102,7 @@ const isMultiple = (elt: element) : boolean => {
   return true
 }
 
-const eltToDecls = (elt: element) : [field, decl[]] => {
+const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
   switch (elt.value.type) {
     case 'ruleRef': {
       return [{
@@ -104,8 +124,9 @@ const eltToDecls = (elt: element) : [field, decl[]] => {
       }, []]
     }
     case 'ebnf': {
-      const decls = alternativesToDecls(elt.value.block)
-      const name = decls[0].name
+      const decls = altListToDecls(elt.value.block, addEbnfPath(path))
+      const name =  /*mkPathName(path)*/ decls[0].name
+      //decls[0].name = name
       return [applySuffix({
         name: minimize(name),
         ftype: {
@@ -134,41 +155,67 @@ const mergeField = (f1: field, f2: field) : field => {
 }
 
 const terminalsToField = (alt: alternatives) : field => {
-  const fields = alt.map(elt => eltToDecls(elt)[0])
+  const fields = alt.map(elt => eltToDecls(elt, [])[0])
   return fields.reduce((acc, field) => {
     return mergeField(acc, field)
   })
 }
 
-const altToName = (alt: alternatives) : string => {
+const altToNameComponents = (alt: alternatives) : string[] => {
   const keywords = alt.reduce((acc, elt) => {
-    return acc + capitalize(eltToKeyword(elt))
-  }, '')
-  if ('' === keywords) {
+    return acc.concat(eltToKeyword(elt))
+  }, [] as string[])
+  if (keywords.length === 0) {
     return alt.reduce((acc, elt) => {
-      return acc + capitalize(eltToName(elt))
-    }, '')
+      return acc.concat(eltToNameComponents(elt))
+    }, [] as string[])
   } else return keywords
 }
 
-const altToDecls = (alt : alternatives, rule ?: string) : [decl, decl[]] => {
+const mkPathName = (path: path) : string => {
+  return path.reduce((acc, pelt) => {
+    switch (pelt.type) {
+      case 'alt': return acc + pelt.index
+      case 'rule': return acc + pelt.name
+      case 'ebnf': return acc
+    }
+  }, "")
+}
+
+const mkAlternativesName = (alt: alternatives, path: path) : string => {
+  const components = altToNameComponents(alt)
+  if (components.length > 5) {
+    // alternatives component make it too complex to name from them
+    // path is then used to name the alternatives
+    return mkPathName(path)
+  } else {
+    return components.map(capitalize).join('')
+  }
+}
+
+const makeAltListName = (name: string, path: path) : string => {
+  if (path.length === 1) {
+    return (path[0] as rule_path).name
+  } else return name + 'Type'
+}
+
+const altToDecls = (alt : alternatives, path: path) : [decl, decl[]] => {
   // need to agglutinate non multiple tokens
   const allNonMultiple = alt.every(elt => !isMultiple(elt))
   var [fields, decls] : [field[], decl[]] = [[], []]
   if (allNonMultiple && alt.length > 1) {
     fields.push(terminalsToField(alt))
   } else {
-    [fields, decls] = alt.reduce(([acc_fields, acc_decls], elt) => {
+    [fields, decls] = alt.reduce(([acc_fields, acc_decls], elt, i) => {
       if (isMultiple(elt) || alt.length === 1) {
-        const [field, ebnf_decls] = eltToDecls(elt)
+        const [field, ebnf_decls] = eltToDecls(elt, addAltPath(path, i))
         return [acc_fields.concat(applySuffix(field, elt.suffix)), acc_decls.concat(ebnf_decls)]
       } else {
         return [acc_fields, acc_decls]
       }
     }, [[], []] as [field[], decl[]])
   }
-  const baseName = altToName(alt)
-  const name = baseName + capitalize(rule ?? '')
+  const name = 'I' + mkAlternativesName(alt, path)
   const decl : decl = {
     type: 'interface',
     name: name,
@@ -178,16 +225,15 @@ const altToDecls = (alt : alternatives, rule ?: string) : [decl, decl[]] => {
   return [decl, decls]
 }
 
-const alternativesToDecls = (alternatives: alternatives[], rule ?: string) : [decl, ...decl[]] => {
-  const [decls, otherdecls, name] = alternatives.reduce(([acc_decls, acc_others, acc_name], alt) => {
-    const [decl, others] = altToDecls(alt, rule)
+const altListToDecls = (altlist: alternatives[], path: path) : [decl, ...decl[]] => {
+  const [decls, otherdecls, name] = altlist.reduce(([acc_decls, acc_others, acc_name], alt, i) => {
+    const [decl, others] = altToDecls(alt, addAltPath(path, i))
     const name = acc_name + capitalize(decl.name)
-    const idecl = { ...decl, name: 'I' + decl.name }
-    return [acc_decls.concat(idecl), acc_others.concat(others), name]
+    return [acc_decls.concat(decl), acc_others.concat(others), name]
   }, [[], [], ''] as [decl[], decl[], string])
   const decl = {
     type: 'type',
-    name: rule ?? name,
+    name: makeAltListName(name, path),
     value: {
       type: 'union',
       types: decls.map(decl => { return {
@@ -206,7 +252,7 @@ export function grammarToDecls(gSpec : grammarSpec) : decl[] {
   return gSpec.rules.reduce((acc, r) => {
     switch (r.type) {
       case 'parserRuleSpec': {
-        return acc.concat(alternativesToDecls(r.definition, r.name))
+        return acc.concat(altListToDecls(r.definition, mkRulePath(r.name)))
       }
       case 'lexerRuleSpec': return acc
     }

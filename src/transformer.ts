@@ -26,7 +26,7 @@ const isSimpleType = (typ: tsType) : boolean => {
     case 'literal':
     case 'atom': return true
     case 'union': {
-      return typ.types.every(isSimpleType)
+      return typ.types.every(t => isSimpleType(t))
     }
   }
   return false
@@ -81,6 +81,62 @@ const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
 /******************************************************************************
  * Transformers
  ******************************************************************************/
+
+/**
+ * Replaces a ref by its definition if the referenced type is used only once:
+ * type T = t      // ref to t
+ * type t = <...>
+ * simplifies to:
+ * type T = <...>
+ * @param decls
+ * @returns
+ */
+const reduceSingleRef = (decls: decl[]) : decl[] => {
+  const res : [decl[], string[], string[]] = decls.reduce(([acc, reduced, toBeRemoved], decl) => {
+    switch (decl.type) {
+      case 'type': {
+        switch (decl.value.type) {
+          case 'ref': {
+            var referenced = getDecl(decl.value.name, decls)
+            //while (reduced.includes(referenced.name)) {
+            //  // lookup in toBeremoved
+            //  referenced
+            //}
+            const nbOccurences = countRefInDecls(decls, decl.value.name)
+            if (nbOccurences === 1) {
+              // reduce it
+              return [ acc.concat({ ...decl,
+                value: referenced.value
+              }), reduced.concat(decl.name), toBeRemoved.concat(referenced.name) ]
+            }
+          }
+        }
+      }
+    }
+    return [ acc.concat(decl), reduced, toBeRemoved ]
+  }, [[], [], []] as [decl[], string[], string[]])
+  return removeDecls(res[0], res[2])
+}
+
+
+/**
+ * Inlines references when the referenced type is a ref itself:
+ * interface I extends<T> {
+ *  f1 : T
+ * }
+ * type T = t
+ * is simplified to
+ * interface I extends<T> {
+ *  f1 : t
+ * }
+ * @param delcs
+ * @returns
+ */
+//const inlineSingleRefType = (delcs: decl[]) : decl[] => {
+//  const res = delcs.reduce(([acc, toBeRemoved], decl) => {
+//
+//  }, [[], []] as [decl[], string[]])
+//}
 
 /**
  * Inlines type in interface in the following situation:
@@ -193,12 +249,12 @@ const simplifiesSingleType = (decls: decl[]) : decl[] => {
 const inlineSimpleTypes = (decls: decl[]) : decl[] => {
   // list simple types to inline
   const simpleTypes = decls.filter(decl => {
-      switch (decl.type) {
-        case 'type': {
-          return isSimpleType(decl.value)
-        }
+    switch (decl.type) {
+      case 'type': {
+        return isSimpleType(decl.value)
       }
-      return false
+    }
+    return false
   })
   const tobeInlined = simpleTypes.reduce((acc, decl) => {
     acc[decl.name] = decl.value
@@ -301,16 +357,10 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
         }
         break
       }
-      case 'interface': {
-        // warning!! the hidden assumption here is that interface comes after union type
-        if (removed.includes(decl.name)) {
-          return [acc, removed]
-        }
-      }
     }
     return [acc.concat(decl), removed]
   }, [[], []] as [decl[], string[]])
-  return res[0]
+  return removeDecls(res[0], res[1].filter(name => countRefInDecls(res[0], name) === 0))
 }
 
 /**
@@ -324,7 +374,6 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
  * type file_ = {
  *   equations: equation[];
  * }
- * Warning! it is mandatory to check that the single interface is not used by anywhere else!
  * @param decls
  * @returns simplified list of declarations
  */
@@ -357,17 +406,10 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
         }
         break
       }
-      case 'interface': {
-        // warning!! the hidden assumption here is that interface comes after union type
-        if (removed.includes(decl.name)) {
-          return [acc, removed]
-        }
-        break
-      }
     }
     return [ acc.concat(decl), removed ]
   }, [[], []] as [ decl[], string[] ])
-  return res[0]
+  return removeDecls(res[0], res[1])
 }
 
 /**
@@ -456,18 +498,18 @@ const addWithType = (decls: decl[]) : decl[] => {
 
 export const transformDecls = (decls: decl[]) : decl[] => {
   return pipeline<decl[]>(
-    fixUniqueDecls,       // mandatory
     fixUniqueFields,      // mandatory
+    fixUniqueDecls,       // mandatory
     simplifySingleUnion,
     simplifyLiteralUnion,
     simplifySingleFieldPojo,
-    inlineSimpleTypes,
-    simplifiesSingleType,
     inlineFieldSingleType,
+//    reduceSingleRef,
+//    inlineSimpleTypes,
+//    simplifiesSingleType,
     addWithType           // mandatory, final
   )(decls)
 }
 
-// EqYield_exprTestlist_star_expr
-// encoding_decl
-// TestColTestPowExprComp_forComTestColTestPowExprComTestStar_exprComp_forComTestStar_exprCom
+// IDddot
+// IUndsc
