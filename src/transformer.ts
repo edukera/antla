@@ -21,12 +21,13 @@ const getDecl = (name : string, decls: decl[]) : decl => {
   throw new Error(`Cannot find decl '${name}'`)
 }
 
-const isSimpleType = (typ: tsType) : boolean => {
+const isSimpleType = (typ: tsType, isRefSimple: boolean = true) : boolean => {
   switch (typ.type) {
+    case 'ref': return isRefSimple
     case 'literal':
     case 'atom': return true
     case 'union': {
-      return typ.types.every(t => isSimpleType(t))
+      return typ.types.every(t => isSimpleType(t, false))
     }
   }
   return false
@@ -504,8 +505,8 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     simplifyLiteralUnion,
     simplifySingleFieldPojo,
     inlineFieldSingleType,
-//    reduceSingleRef,
-//    inlineSimpleTypes,
+    reduceSingleRef,
+    inlineSimpleTypes,
 //    simplifiesSingleType,
     addWithType           // mandatory, final
   )(decls)
