@@ -8,7 +8,7 @@
 import { alternatives, element, grammarSpec, rule, suffix, withType } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
-import { capitalize, minimize } from "./utils";
+import { capitalize, minimize, removeIfFirst } from "./utils";
 
 const tokenDB = new tokenDataBase()
 
@@ -193,10 +193,12 @@ const mkAlternativesName = (alt: alternatives, path: path) : string => {
   }
 }
 
+
+
 const makeAltListName = (name: string, path: path) : string => {
   if (path.length === 1) {
     return (path[0] as rule_path).name
-  } else return name + 'Type'
+  } else return 't' + removeIfFirst(name, 'I')
 }
 
 const altToDecls = (alt : alternatives, path: path) : [decl, decl[]] => {
