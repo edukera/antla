@@ -5,11 +5,11 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/src/main.ts",
+      "program": "${workspaceFolder}/src/cli.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "sourceMaps": true,
-      "args": ["-g", "${workspaceFolder}/tests/grammars/basic/Basic.g4"]
+      "args": ["-g", "${workspaceFolder}/tests/grammars/expr/Expr.g4"]
     },
     {
       "type": "node",

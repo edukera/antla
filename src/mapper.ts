@@ -175,7 +175,7 @@ const altToNameComponents = (alt: alternatives) : string[] => {
 const mkPathName = (path: path) : string => {
   return path.reduce((acc, pelt) => {
     switch (pelt.type) {
-      case 'alt': return acc + pelt.index
+      case 'alt': return acc + (pelt.index + 1)
       case 'rule': return acc + pelt.name
       case 'ebnf': return acc
     }
@@ -192,8 +192,6 @@ const mkAlternativesName = (alt: alternatives, path: path) : string => {
     return components.map(capitalize).join('')
   }
 }
-
-
 
 const makeAltListName = (name: string, path: path) : string => {
   if (path.length === 1) {
