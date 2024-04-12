@@ -9,7 +9,7 @@ import { array, decl, field, interfaceDecl, pojo, ref, stringliteral, tsType, un
 import { pipeline } from "./utils"
 
 /******************************************************************************
- * Utils
+ * MARK:Utils
  ******************************************************************************/
 
 const getDecl = (name : string, decls: decl[]) : decl => {
@@ -80,7 +80,7 @@ const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
 }
 
 /******************************************************************************
- * Transformers
+ * MARK: Transformers
  ******************************************************************************/
 
 /**
@@ -118,26 +118,6 @@ const reduceSingleRef = (decls: decl[]) : decl[] => {
   }, [[], [], []] as [decl[], string[], string[]])
   return removeDecls(res[0], res[2])
 }
-
-
-/**
- * Inlines references when the referenced type is a ref itself:
- * interface I extends<T> {
- *  f1 : T
- * }
- * type T = t
- * is simplified to
- * interface I extends<T> {
- *  f1 : t
- * }
- * @param delcs
- * @returns
- */
-//const inlineSingleRefType = (delcs: decl[]) : decl[] => {
-//  const res = delcs.reduce(([acc, toBeRemoved], decl) => {
-//
-//  }, [[], []] as [decl[], string[]])
-//}
 
 /**
  * Inlines type in interface in the following situation:
@@ -197,39 +177,7 @@ const inlineFieldSingleType = (decls: decl[]) : decl[] => {
   return removeDecls(res[0], res[1])
 }
 
-/**
- * Simplifies the following situation:
- * type A = B
- * type B = <...>
- * to
- * type A = <...> when B is not used anywhere
- */
-const simplifiesSingleType = (decls: decl[]) : decl[] => {
-  const res : [decl[], string[]] = decls.reduce(([acc, toBeRemoved], decl) => {
-    switch (decl.type) {
-      case 'type': {
-        switch (decl.value.type) {
-          case 'ref': {
-            // is ref type used somewhere else ?
-            const name = decl.value.name
-            const count = countRefInDecls(decls, name)
-            if (count === 1) {
-              // replace current ref by referenced definition
-              const referenced = getDecl(name, decls)
-              return [acc.concat({ ...decl,
-                value: referenced.value
-              }), toBeRemoved.concat(name)]
-            }
-          }
-        }
-      }
-    }
-    return [acc.concat(decl), toBeRemoved]
-  }, [[], []] as [decl[], string[]])
-  return removeDecls(res[0], res[1])
-}
-
-/**
+/******************************************************************************
  * Inlines simples types: a simple type is either an union of literal, or an atomic type
  * For example from 'Expr.g4':
  * type TimesDiv = "*" | "/";
@@ -246,7 +194,7 @@ const simplifiesSingleType = (decls: decl[]) : decl[] => {
  * }
  * @param decls
  * @returns
- */
+ ******************************************************************************/
 const inlineSimpleTypes = (decls: decl[]) : decl[] => {
   // list simple types to inline
   const simpleTypes = decls.filter(decl => {
@@ -273,7 +221,7 @@ const inlineSimpleTypes = (decls: decl[]) : decl[] => {
   })
 }
 
-/**
+/******************************************************************************
  * Simplies pojo types with single field. For example from 'Expr.g4':
  * type file_ = {
  *     equations: equation[];
@@ -282,7 +230,7 @@ const inlineSimpleTypes = (decls: decl[]) : decl[] => {
  * type file_ = equation[];
  * @param decls
  * @returns simplified declarations
- */
+ ******************************************************************************/
 const simplifySingleFieldPojo = (decls: decl[]) : decl[] => {
   return decls.reduce((acc, decl) => {
     switch (decl.type) {
@@ -303,7 +251,7 @@ const simplifySingleFieldPojo = (decls: decl[]) : decl[] => {
   }, [] as decl[])
 }
 
-/**
+/******************************************************************************
  * Simplifies a union of literal (string) types. For example from Expr.g4:
  * type TimesDiv = times | div;
  * interface times extends withType<"times"> {
@@ -316,7 +264,7 @@ const simplifySingleFieldPojo = (decls: decl[]) : decl[] => {
  * type TimesDiv = "*" | "/"
  * @param decls
  * @returns simplified list of declarations
- */
+ ******************************************************************************/
 const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
   // look for union literal string types
   const res : [decl[], string[]]  = decls.reduce(([acc, removed], decl) => {
@@ -364,7 +312,7 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
   return removeDecls(res[0], res[1].filter(name => countRefInDecls(res[0], name) === 0))
 }
 
-/**
+/******************************************************************************
  * Simplifies unions of single interface to pojo type.
  * For example, the file_ type from 'Expr.g4':
  * type file_ = equationEofFile_;
@@ -377,7 +325,7 @@ const simplifyLiteralUnion = (decls: decl[]) : decl[] => {
  * }
  * @param decls
  * @returns simplified list of declarations
- */
+ ******************************************************************************/
 const simplifySingleUnion = (decls: decl[]) : decl[] => {
   const res : [ decl[], string[] ] = decls.reduce(([acc, removed], decl) => {
     switch (decl.type) {
@@ -413,8 +361,9 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
   return removeDecls(res[0], res[1])
 }
 
-/**
- * Fixes duplicated interface fields names: the type generation generates interface with duplicate field names.
+/******************************************************************************
+ * Fixes duplicated interface fields names: the type generation generates
+ * interface with duplicate field names.
  * For example, the expressionRelopExpressionEquation interface from 'Expr.g4' is
  * interface expressionRelopExpressionEquation extends withType<"expressionRelopExpressionEquation"> {
  *   expression: expression;
@@ -429,7 +378,7 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
  * }
  * @param decls
  * @returns declarations with unique fields
- */
+ ******************************************************************************/
 const fixUniqueFields = (decls: decl[]) : decl[] => {
   return decls.map(decl => {
     switch (decl.type) {
@@ -456,11 +405,11 @@ const fixUniqueFields = (decls: decl[]) : decl[] => {
   })
 }
 
-/**
+/******************************************************************************
  * Removes duplicated declarations
  * @param decls
  * @returns
- */
+ ******************************************************************************/
 const fixUniqueDecls = (decls: decl[]) : decl[] => {
   const acc: [string[], decl[]] = decls.reduce(([acc_ids, acc_decls], decl) => {
     if (acc_ids.includes(decl.name)) {
@@ -472,11 +421,11 @@ const fixUniqueDecls = (decls: decl[]) : decl[] => {
   return acc[1]
 }
 
-/**
+/******************************************************************************
  * withType type must escape all tranforms
  * @param decls
  * @returns
- */
+ ******************************************************************************/
 const addWithType = (decls: decl[]) : decl[] => {
   const withTypeDecl : decl = {
     type: 'type',
@@ -497,6 +446,9 @@ const addWithType = (decls: decl[]) : decl[] => {
   return [withTypeDecl, ...decls]
 }
 
+/******************************************************************************
+ * MARK:Pipeline
+ ******************************************************************************/
 export const transformDecls = (decls: decl[]) : decl[] => {
   return pipeline<decl[]>(
     fixUniqueFields,      // mandatory
@@ -507,10 +459,6 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     inlineFieldSingleType,
     reduceSingleRef,
     inlineSimpleTypes,
-//    simplifiesSingleType,
     addWithType           // mandatory, final
   )(decls)
 }
-
-// IDddot
-// IUndsc

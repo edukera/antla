@@ -3,7 +3,8 @@
  * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
  * License: MIT
  * Creation Date: 2024-03-29
- */
+*/
+import { writeFileSync } from 'fs';
 
 export const pipeline = <T>(...functions: Function[]) => (value: T) =>
 functions.reduce((currentValue, currentFunction) => currentFunction(currentValue), value);
@@ -21,3 +22,18 @@ export function minimize(string: string): string {
 export function removeIfFirst(input: string, first: string): string {
   return input.startsWith(first) ? input.slice(1) : input;
 }
+
+
+/**
+ * Writes or replaces content in a file synchronously.
+ * @param content The string to write to the file.
+ * @param filePath The full path to the file.
+ */
+export function writeContentToFile(content: string, filePath: string): void {
+  try {
+      writeFileSync(filePath, content);
+  } catch (error) {
+      console.error('Failed to write to the file:', error);
+  }
+}
+

@@ -6,17 +6,28 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
-    "run": "npm run build; node ./dist/main.js"
+    "basic": "npm run build; node ./dist/cli.js -g ./tests/grammars/basic/Basic.g4",
+    "expr": "npm run build; node ./dist/cli.js -g ./tests/grammars/expr/Expr.g4",
+    "python3": "npm run build; node ./dist/cli.js -g ./tests/grammars/python3/Python3.g4",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.11.30",
-    "rimraf": "^5.0.5"
+    "@types/yargs": "^17.0.32",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2"
   },
   "dependencies": {
+    "antlr4": "^4.13.1-patch-1",
     "typescript": "^5.4.3",
-    "antlr4": "^4.13.1-patch-1"
+    "yargs": "^17.7.2"
   }
 }
