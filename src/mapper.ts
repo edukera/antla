@@ -162,14 +162,9 @@ const terminalsToField = (alt: alternatives) : field => {
 }
 
 const altToNameComponents = (alt: alternatives) : string[] => {
-  const keywords = alt.reduce((acc, elt) => {
-    return acc.concat(eltToKeyword(elt))
+  return alt.reduce((acc, elt) => {
+    return acc.concat(eltToNameComponents(elt))
   }, [] as string[])
-  if (keywords.length === 0) {
-    return alt.reduce((acc, elt) => {
-      return acc.concat(eltToNameComponents(elt))
-    }, [] as string[])
-  } else return keywords
 }
 
 const mkPathName = (path: path) : string => {
