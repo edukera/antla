@@ -4,7 +4,6 @@
  * License: MIT
  * Creation Date: 2024-03-29
  */
-import { decl } from "./types";
 
 export const pipeline = <T>(...functions: Function[]) => (value: T) =>
 functions.reduce((currentValue, currentFunction) => currentFunction(currentValue), value);

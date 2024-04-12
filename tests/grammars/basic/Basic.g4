@@ -1,4 +1,4 @@
-grammar ExprSimple;
+grammar Basic;
 prog:	expr EOF ;
 expr:	expr ('*'|'/') expr
     |	expr ('+'|'-') expr

@@ -39,6 +39,6 @@ function generate(filePath: string): void {
 
 // Utilisation de la fonction 'generate'
 // Remplacez './chemin/vers/votre/fichier.txt' par le chemin réel du fichier que vous souhaitez lire
-//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/ExprSimple.g4');
-//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Expr.g4');
-generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/Python3Parser.g4');
+//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/expr/Expr.g4');
+generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/basic/Basic.g4');
+//generate('/Users/benoitrognier/Projects/franceioi/antla/tests/grammars/python3/Python3Parser.g4');
