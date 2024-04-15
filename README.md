@@ -53,6 +53,20 @@ In the above example, we need to rely on the `typedargslist`
 type typedargslist = Itypedargslist1 | Itypedargslist2 | IPowTfpdefCom
 ```
 
+#### Fields Naming
+
+Each ebnf alternative generates an interface with fields.
+
+The field naming strategy is as follows, based on the type of the element:
+* reference: the field and type are named as the rule
+* ebnf:
+  * if alternatives are literals, the field is named as the *concatenation*of these literals
+  * otherwise:
+    - the *field* is named as the concatenation of the ebnf elements(concatenation keywords first, then parser rules ) under length constraint
+    - the *type* is named as `<interface>_f<idx>`
+
+Other elements are not considered for interface fields.
+
 The naming question is partially answered. The `Itypedargslist1` type is an interface with 4 fields. The last field is for the following complex ebnf:
 
 ```
@@ -64,14 +78,14 @@ The naming question is partially answered. The `Itypedargslist1` type is an inte
 
 With concatenation strategy, the field/type name would be `ComMultTfpdefComTfpdefEqTestQmarkStarComPowTfpdefComQmarkQmarkPowTfpdefComQmark` ...
 
-Hence the naming strategy here is to use the interface name suffixed by `_field<idx>` as illustrated below:
+Hence the naming strategy here is to use the interface name suffixed by `_f<idx>` as illustrated below:
 
 ```ts
 interface Itypedargslist1 extends withType<"Itypedargslist1"> {
     tfpdef: tfpdef;
     eqTest?: EqTest;
     comTfpdefEqTestQmarks: ComTfpdefEqTestQmark[];
-    typedargslist1_field4?: Itypedargslist1_field4;
+    typedargslist1_f4?: Itypedargslist1_field4;
 }
 ```
 

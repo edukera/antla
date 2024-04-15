@@ -9,6 +9,10 @@ import { writeFileSync } from 'fs';
 export const pipeline = <T>(...functions: Function[]) => (value: T) =>
 functions.reduce((currentValue, currentFunction) => currentFunction(currentValue), value);
 
+export function exists<T>(arr: T[], predicate: (element: T) => boolean): boolean {
+  return arr.reduce((acc, element) => acc || predicate(element), false);
+}
+
 export function capitalize(string: string): string {
   if (string.length === 0) return "";
   return string.charAt(0).toUpperCase() + string.slice(1);

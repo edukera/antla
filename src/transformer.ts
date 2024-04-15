@@ -340,15 +340,26 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
               if (nbOccurences === 1) {
                 // trigger simplification
                 const interf = getDecl(name, decls) as interfaceDecl
-                // transmute union to pojo
-                const pojo : pojo = {
-                  type: 'pojo',
-                  fields: interf.value.fields
+                // transmute union to pojo or ref if only one field
+                if (interf.value.fields.length === 1 && interf.value.fields[0].optional === false) {
+                  const ref: ref = {
+                    type: 'ref',
+                    name: interf.value.fields[0].name
+                  }
+                  const new_decl : decl = { ...decl,
+                    value: ref
+                  }
+                  return [acc.concat(new_decl), removed.concat(name)]
+                } else {
+                  const pojo : pojo = {
+                    type: 'pojo',
+                    fields: interf.value.fields
+                  }
+                  const new_decl : decl = { ...decl,
+                    value: pojo
+                  }
+                  return [acc.concat(new_decl), removed.concat(name)]
                 }
-                const new_decl : decl = { ...decl,
-                  value: pojo
-                }
-                return [acc.concat(new_decl), removed.concat(name)]
               }
             }
           }

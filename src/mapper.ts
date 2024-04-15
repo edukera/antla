@@ -5,10 +5,10 @@
  * Creation Date: 2024-03-29
  */
 
-import { alternatives, element, grammarSpec, rule, suffix, withType } from "./grammar";
+import { alternatives, ebnf, element, grammarSpec, rule, suffix, withType } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
-import { capitalize, minimize, removeIfFirst } from "./utils";
+import { capitalize, exists, minimize, removeIfFirst } from "./utils";
 
 const tokenDB = new tokenDataBase()
 
@@ -50,6 +50,18 @@ const applySuffix = (field : field, suffix: suffix | undefined) : field => {
   } else {
     return field
   }
+}
+
+const eltToRuleName = (elt: element) : string => {
+  switch (elt.value.type) {
+    case 'ruleRef': {
+      return elt.value.value
+    }
+    case 'ebnf': {
+      return 'ebnf'
+    }
+  }
+  return ''
 }
 
 const eltToKeyword = (elt: element) : string[] => {
@@ -102,6 +114,47 @@ const isMultiple = (elt: element) : boolean => {
   return true
 }
 
+const mkEbnfFieldName = (elts: element[]) : string => {
+  const keywords = elts.reduce((acc,elt) => {
+    return acc.concat(eltToKeyword(elt))
+  }, [] as string[])
+  if (keywords.length > 0) {
+    return keywords.map(capitalize).join('')
+  } else {
+    return elts.reduce((acc, elt) => {
+      return acc + eltToRuleName(elt)
+    }, '')
+  }
+}
+
+const mkEbnfTypeName = (path: path) : string => {
+  return mkPathName(path)
+}
+
+const isAlternativesOfTokens = (elts: element[]) : boolean => {
+  return elts.every(elt => !isMultiple(elt))
+}
+
+/**
+ *  The critical naming strategy! In a nutshell:
+ *  If the ebnf is alternatives of literals, let the default concatenation strategy
+ *  otherwise, the field name is keywords or parser rules names only
+ *  and the type name is made with path
+ * @param ebnf
+ * @param path
+ * @param concatenationName
+ * @returns field name, type name
+ */
+const mkEbnFieldTypeName = (ebnf: ebnf, path: path, concatenationName: string) : [string, string] => {
+  if (isAlternativesOfTokens(ebnf.block.flat())) {
+    return [concatenationName, concatenationName]
+  } else {
+    const fieldName = mkEbnfFieldName(ebnf.block.flat())
+    const fieldTypeName = mkEbnfTypeName(path)
+    return [fieldName, fieldTypeName]
+  }
+}
+
 const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
   switch (elt.value.type) {
     case 'ruleRef': {
@@ -125,13 +178,13 @@ const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
     }
     case 'ebnf': {
       const decls = altListToDecls(elt.value.block, addEbnfPath(path))
-      const name =  /*mkPathName(path)*/ decls[0].name
-      //decls[0].name = name
+      const [fieldName, typeName] = mkEbnFieldTypeName(elt.value, path, decls[0].name)
+      decls[0].name = typeName
       return [applySuffix({
-        name: minimize(name),
+        name: minimize(fieldName),
         ftype: {
           type: 'ref',
-          name: name
+          name: typeName
         },
         optional: false
       }, elt.value.suffix), decls]
@@ -220,9 +273,18 @@ const altToDecls = (alt : alternatives, path: path) : [decl, decl[]] => {
   return [decl, decls]
 }
 
+const isAltListMultiple = (altlist: alternatives[]) : boolean => {
+  const count = altlist.reduce((acc, alt) => {
+    return acc + (exists<element>(alt, (elt => isMultiple(elt))) ? 1 : 0)
+  }, 0)
+  return count > 1
+}
+
 const altListToDecls = (altlist: alternatives[], path: path) : [decl, ...decl[]] => {
+  const isMultiple = isAltListMultiple(altlist)
   const [decls, otherdecls, name] = altlist.reduce(([acc_decls, acc_others, acc_name], alt, i) => {
-    const [decl, others] = altToDecls(alt, addAltPath(path, i))
+    const new_path = isMultiple ? addAltPath(path, i) : path
+    const [decl, others] = altToDecls(alt, new_path)
     const name = acc_name + capitalize(decl.name)
     return [acc_decls.concat(decl), acc_others.concat(others), name]
   }, [[], [], ''] as [decl[], decl[], string])
