@@ -4,12 +4,22 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "antla Python3",
       "program": "${workspaceFolder}/src/cli.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "sourceMaps": true,
       "args": ["-g", "${workspaceFolder}/tests/grammars/python3/Python3Parser.g4"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "antla Expr",
+      "program": "${workspaceFolder}/src/cli.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "args": ["-g", "${workspaceFolder}/tests/grammars/expr/Expr.g4"]
     },
     {
       "type": "node",

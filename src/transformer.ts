@@ -83,6 +83,141 @@ const removeDecls = (decls: decl[], toberemoved: string[]) : decl[] => {
  * MARK: Transformers
  ******************************************************************************/
 
+const removeSingleDecls = (decls: decl[]) : decl[] => {
+  const toBeRemoved = decls.reduce((acc, decl) => {
+    switch (decl.type) {
+      case 'type': {
+        switch (decl.value.type) {
+          case 'union': {
+            if (decl.value.types.length > 1) {
+              break
+            }
+          }
+          case 'ref': {
+            const nbOccurences = countRefInDecls(decls, decl.name)
+            if (nbOccurences === 0) {
+              return acc.concat(decl.name)
+            }
+            break
+          }
+        }
+      }
+    }
+    return acc
+  }, [] as string[])
+  return removeDecls(decls, toBeRemoved)
+}
+
+const reduceFieldType = (typ: tsType, equalities: { [key: string]: string }) : tsType => {
+  const reduce = (s: string) : string => {
+    if (equalities.hasOwnProperty(s)) {
+      return reduce(equalities[s])
+    } else {
+      return s
+    }
+  }
+  switch (typ.type) {
+    case 'ref': {
+      return { ...typ,
+        name: reduce(typ.name)
+      }
+    }
+    case 'array': {
+      switch (typ.arg.type) {
+        case 'ref': {
+          return { ...typ,
+            arg: { ...typ.arg,
+              name: reduce(typ.arg.name)
+            }
+          }
+        }
+      }
+    }
+  }
+  return typ
+}
+
+/**
+ * See 'Simplifications' section in README.md
+ * @param decls
+ * @returns
+ */
+const reduceInterfaceFieldType = (decls: decl[]) : decl[] => {
+  // 1) collect equalities
+  const equalities = decls.reduce((acc, decl) => {
+    switch (decl.type) {
+      case 'interface': {
+        if (decl.value.fields.length === 1 && decl.value.fields[0].optional === false) {
+          switch(decl.value.fields[0].ftype.type) {
+            case 'ref': {
+              const ref = decl.value.fields[0].ftype.name
+              if (!acc.hasOwnProperty(ref)) {
+                acc[decl.name] = decl.value.fields[0].ftype.name
+              }
+            }
+          }
+        }
+        break
+      }
+      case 'type': {
+        switch (decl.value.type) {
+          case 'ref': {
+            acc[decl.name] = decl.value.name
+            break
+          }
+          case 'union': {
+            if (decl.value.types.length === 1) {
+              switch (decl.value.types[0].type) {
+                case 'ref': {
+                  const ref = decl.value.types[0].name
+                  if (!acc.hasOwnProperty(ref)) {
+                    acc[decl.name] = decl.value.types[0].name
+                  }
+                  break
+                }
+              }
+            }
+          }
+        }
+        break
+      }
+    }
+    return acc
+  }, {} as { [key: string]: string })
+  // 2) Reduce interface field type
+  const replaceFields = (fields: field[], eqs: { [key: string]: string }) : field[] => {
+    return fields.map(field => {
+      const reduced_type = reduceFieldType(field.ftype, eqs)
+      return { ...field,
+        ftype: reduced_type
+      }
+    })
+  }
+  return decls.map(decl => {
+    switch (decl.type) {
+      case 'interface' : {
+        return { ...decl,
+          value: { ...decl.value,
+            fields: replaceFields(decl.value.fields, equalities)
+          }
+        }
+      }
+      case 'type' : {
+        switch (decl.value.type) {
+          case 'pojo': {
+            return { ...decl,
+              value: { ...decl.value,
+                fields: replaceFields(decl.value.fields, equalities)
+              }
+            }
+          }
+        }
+      }
+    }
+    return decl
+  })
+}
+
 /**
  * Replaces a ref by its definition if the referenced type is used only once:
  * type T = t      // ref to t
@@ -341,25 +476,14 @@ const simplifySingleUnion = (decls: decl[]) : decl[] => {
                 // trigger simplification
                 const interf = getDecl(name, decls) as interfaceDecl
                 // transmute union to pojo or ref if only one field
-                if (interf.value.fields.length === 1 && interf.value.fields[0].optional === false) {
-                  const ref: ref = {
-                    type: 'ref',
-                    name: interf.value.fields[0].name
-                  }
-                  const new_decl : decl = { ...decl,
-                    value: ref
-                  }
-                  return [acc.concat(new_decl), removed.concat(name)]
-                } else {
-                  const pojo : pojo = {
-                    type: 'pojo',
-                    fields: interf.value.fields
-                  }
-                  const new_decl : decl = { ...decl,
-                    value: pojo
-                  }
-                  return [acc.concat(new_decl), removed.concat(name)]
+                const pojo : pojo = {
+                  type: 'pojo',
+                  fields: interf.value.fields
                 }
+                const new_decl : decl = { ...decl,
+                  value: pojo
+                }
+                return [acc.concat(new_decl), removed.concat(name)]
               }
             }
           }
@@ -470,6 +594,10 @@ export const transformDecls = (decls: decl[]) : decl[] => {
     inlineFieldSingleType,
     reduceSingleRef,
     inlineSimpleTypes,
+    reduceInterfaceFieldType,
+    removeSingleDecls,    // mandatory
     addWithType           // mandatory, final
   )(decls)
 }
+
+// tfpdef2

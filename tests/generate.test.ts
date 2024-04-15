@@ -1,23 +1,45 @@
-import { existsSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { generate } from '../src/generate'
+
+const rm = (file: string) : void => {
+  if (existsSync(file)) unlinkSync(file);
+}
+
+interface GenerateTest {
+  title: string
+  source: string
+  output: string
+}
+
+const tests : GenerateTest[] = [
+  {
+    title: 'Generate Basic',
+    source: './tests/grammars/basic/Basic.g4',
+    output: './tests/basic.ts'
+  },
+  {
+    title: 'Generate Expr',
+    source: './tests/grammars/expr/Expr.g4',
+    output: './tests/expr.ts'
+  },
+  {
+    title: 'Generate Python3',
+    source: './tests/grammars/python3/Python3Parser.g4',
+    output: './tests/python3.ts'
+  }
+]
 
 describe('Genreate files', () => {
   beforeAll(() => {
-    // remove files ?
+    tests.forEach(test => {
+      rm(test.output)
+    })
   })
-  it('Generate Basic', () => {
-    generate('./tests/grammars/basic/Basic.g4', './tests/basic.ts')
-    const doesExist = existsSync('./tests/basic.ts');
-    expect(doesExist).toBe(true)
-  });
-  it('Generate Expr', () => {
-    generate('./tests/grammars/expr/Expr.g4', './tests/expr.ts')
-    const doesExist = existsSync('./tests/expr.ts');
-    expect(doesExist).toBe(true)
-  });
-  it('Generate Python3', () => {
-    generate('./tests/grammars/python3/Python3Parser.g4', './tests/python3.ts')
-    const doesExist = existsSync('./tests/python3.ts');
-    expect(doesExist).toBe(true)
-  });
+  tests.forEach(test => {
+    it(test.title, () => {
+      generate(test.source, test.output)
+      const doesExist = existsSync(test.output);
+      expect(doesExist).toBe(true)
+    });
+  })
 })

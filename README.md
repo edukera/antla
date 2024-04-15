@@ -102,37 +102,35 @@ Each elligible element generates a pojo *field*. Elligigle elements for fields a
 * non unique token
 * ebnf
 
-### Implementation
+## Simplifications
 
-There is a common code for parser rule and EBNF, since both are list of list of elements.
+An important step is the simplification of generated types.
 
-Naming:
-* `alternativesToName`
-* `alternativeToName`
-* `elementToName`:
-  * `ebnf`: name of dedicated generated type (concatenation of alternative names)
-  * `rule`: rule name
-  * `token`:
-    * concatenation of token names when alternatives of lexer elements
-    * lexer rule name otherwise
+For example:
 
-Typing:
-* `alternativesToType`
-* `alternativeToType` (pojo: name and fields)
-* `elementToType`:
-  * `ebnf`: reference to dedicated generated type
-  * `rule`: reference to rule
-  * `token` (when non unique):
-    * union of tokens when alternatives of lexer elements
-    * atomic type (`string` or `number`) when specified
+```ts
+interface IEqTest extends withType<"IEqTest"> {
+    test: test;
+}
+type typedargslist133 = IEqTest;
+interface IComTfpdefEqTestQmark extends withType<"IComTfpdefEqTestQmark"> {
+    tfpdef: tfpdef;
+    test?: typedargslist133;
+}
+```
 
-EBNF elements are typed as a reference type to a dedicated type.
+is reduced to:
+```ts
+interface IComTfpdefEqTestQmark extends withType<"IComTfpdefEqTestQmark"> {
+    tfpdef: tfpdef;
+    test?: test;
+}
+```
 
-The generation of types is in two steps:
- - fold alternatives to generate type declarations
- - generate parser rules union
-
-The alternative folder `foldAlternative` (aka reducer) folds parser rules and ebnfs and returns a list of declarations.
+The process applies the chain of equalities: `typedargslist133 -> IEqTest -> test`:
+* first pass registers equalities `IEqTest = test; typedargslist133 = IEqTest`
+* second pass reduces interface field type `typedargslist133`
+* last phase removes unused types (here `typedargslist133` and `IEqTest`)
 
 ## Examples
 
