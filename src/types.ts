@@ -52,3 +52,8 @@ export interface typeDecl extends withType<'type'> {
 }
 
 export type decl = interfaceDecl | typeDecl
+
+export type scope = {
+  name: string
+  decls: decl[]
+}

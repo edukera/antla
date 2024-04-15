@@ -158,12 +158,13 @@ const mkEbnFieldTypeName = (ebnf: ebnf, path: path, concatenationName: string) :
 const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
   switch (elt.value.type) {
     case 'ruleRef': {
+      var eltType : tsType = {
+        type: 'ref',
+        name: elt.value.value,
+      }
       return [{
         name: elt.value.value, // name will be dedup with a transformer
-        ftype: {
-          type: 'ref',
-          name: elt.value.value,
-        },
+        ftype: eltType,
         optional: false
       }, []]
     }
@@ -282,6 +283,15 @@ const isAltListMultiple = (altlist: alternatives[]) : boolean => {
 
 const altListToDecls = (altlist: alternatives[], path: path) : [decl, ...decl[]] => {
   const isMultiple = isAltListMultiple(altlist)
+  if (altlist.flat().length === 1 && altlist.flat()[0].suffix === undefined) {
+    const elt = altlist.flat()[0]
+    const [field, decls] = eltToDecls(elt, path)
+    return [{
+      type: 'type',
+      name: makeAltListName(field.name, path),
+      value: field.ftype
+    } as decl, ...decls]
+  }
   const [decls, otherdecls, name] = altlist.reduce(([acc_decls, acc_others, acc_name], alt, i) => {
     const new_path = isMultiple ? addAltPath(path, i) : path
     const [decl, others] = altToDecls(alt, new_path)

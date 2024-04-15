@@ -5,7 +5,7 @@
  * Creation Date: 2024-03-29
  */
 import ts, { createPrinter, createSourceFile, factory, KeywordTypeNode, KeywordSyntaxKind, ListFormat, NewLineKind, NodeFlags, ScriptKind, ScriptTarget, SyntaxKind, TypeNode } from 'typescript';
-import { tsType, atom, ref, array, union, pojo, field, decl, interfaceDecl, stringliteral, typeDecl } from './types';
+import { tsType, atom, ref, array, union, pojo, field, decl, interfaceDecl, stringliteral, typeDecl, scope } from './types';
 
 // See https://ts-ast-viewer.com/ for TS AST code
 
@@ -99,9 +99,18 @@ const createFromDecls = (decls: decl[]) => {
   })
 }
 
-export const createTs = (decls: decl[]) : string => {
+const createNameSpace = (scope: scope) => {
+  return factory.createModuleDeclaration(
+    undefined,
+    factory.createIdentifier(scope.name),
+    factory.createModuleBlock(factory.createNodeArray(createFromDecls(scope.decls))),
+    ts.NodeFlags.Namespace
+  )
+}
+
+export const createTs = (scope: scope) : string => {
   const file = createSourceFile("source.ts", "", ScriptTarget.ESNext, false, ScriptKind.TS);
   const printer = createPrinter({ newLine: NewLineKind.LineFeed });
-  const node = factory.createNodeArray(createFromDecls(decls))
-  return printer.printList(ListFormat.MultiLine, node, file)
+  const node = createNameSpace(scope)
+  return printer.printNode(ts.EmitHint.Unspecified, node, file)
 }

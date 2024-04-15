@@ -58,7 +58,8 @@ export function generate(grammar: string, output: string | undefined): void {
       const types = grammarToDecls(simplifyGrammar(grammarNode))
       //console.log(JSON.stringify(types, null, 2))
       const transformedTypes = transformDecls(types)
-      const content = createTs(transformedTypes)
+      //console.log(JSON.stringify(transformedTypes, null, 2))
+      const content = createTs({ name: grammarNode.grammarDecl.identifier, decls: transformedTypes })
       if (outputPath !== undefined) {
           writeContentToFile(content, outputPath)
       } else {
