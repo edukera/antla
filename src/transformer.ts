@@ -152,7 +152,20 @@ const reduceInterfaceFieldType = (decls: decl[]) : decl[] => {
             case 'ref': {
               const ref = decl.value.fields[0].ftype.name
               if (!acc.hasOwnProperty(ref)) {
-                acc[decl.name] = decl.value.fields[0].ftype.name
+                acc[decl.name] = ref
+              }
+              break
+            }
+            case 'array': {
+              const arg = decl.value.fields[0].ftype.arg
+              switch (arg.type) {
+                case 'ref': {
+                  const ref = arg.name
+                  if (!acc.hasOwnProperty(ref)) {
+                    acc[decl.name] = ref
+                  }
+                  break
+                }
               }
             }
           }
@@ -170,8 +183,8 @@ const reduceInterfaceFieldType = (decls: decl[]) : decl[] => {
               switch (decl.value.types[0].type) {
                 case 'ref': {
                   const ref = decl.value.types[0].name
-                  if (!acc.hasOwnProperty(ref)) {
-                    acc[decl.name] = decl.value.types[0].name
+                  if (!acc.hasOwnProperty(decl.name)) {
+                    acc[decl.name] = ref
                   }
                   break
                 }

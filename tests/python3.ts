@@ -51,10 +51,9 @@ namespace Python3Parser {
     interface IEqTest extends withType<"IEqTest"> {
         test: test;
     }
-    type typedargslist133 = IEqTest;
     interface IComTfpdefEqTestQmark extends withType<"IComTfpdefEqTestQmark"> {
         tfpdef: tfpdef;
-        test?: typedargslist133;
+        test?: test;
     }
     type typedargslist14 = {
         tfpdefebnfebnftfpdef?: typedargslist142;
@@ -90,11 +89,9 @@ namespace Python3Parser {
         test: test;
     }
     type varargslist = Ivarargslist1 | Ivarargslist2 | IPowVfpdefCom;
-    type varargslist12 = IEqTest;
-    type varargslist133 = IEqTest;
     interface IComVfpdefEqTestQmark extends withType<"IComVfpdefEqTestQmark"> {
         vfpdef: name;
-        test?: varargslist133;
+        test?: test;
     }
     type varargslist14 = {
         vfpdefebnfebnfvfpdefebnf?: varargslist142;
@@ -117,7 +114,7 @@ namespace Python3Parser {
     }
     interface Ivarargslist1 extends withType<"Ivarargslist1"> {
         vfpdef: name;
-        test?: varargslist12;
+        test?: test;
         vfpdefebnfs: IComVfpdefEqTestQmark[];
         ebnf?: varargslist14;
     }
@@ -153,7 +150,7 @@ namespace Python3Parser {
     }
     interface INonlocal_stmt extends withType<"INonlocal_stmt"> {
         name: name;
-        names: nonlocal_stmt3[];
+        names: name[];
     }
     interface IAssert_stmt extends withType<"IAssert_stmt"> {
         test1: test;
@@ -173,7 +170,7 @@ namespace Python3Parser {
     }
     interface IAnnassign extends withType<"IAnnassign"> {
         test1: test;
-        test2?: annassign3;
+        test2?: test;
     }
     interface IAugassignYield_exprTestlist extends withType<"IAugassignYield_exprTestlist"> {
         augassign: "+=" | "-=" | "*=" | "@=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>=" | "**=" | "//=";
@@ -182,7 +179,6 @@ namespace Python3Parser {
     interface IEqYield_exprTestlist_star_exprStar extends withType<"IEqYield_exprTestlist_star_exprStar"> {
         ebnfs: expr_stmt231[];
     }
-    type annassign3 = IEqTest;
     type testlist_star_expr = {
         teststar_expr: testlist_star_expr1;
         ebnfs: testlist_star_expr22[];
@@ -192,7 +188,7 @@ namespace Python3Parser {
         test: test;
     }
     interface IStar_expr extends withType<"IStar_expr"> {
-        star_expr: star_expr;
+        star_expr: expr;
     }
     type testlist_star_expr22 = ITest | IStar_expr;
     interface IComTestStar_expr extends withType<"IComTestStar_expr"> {
@@ -263,9 +259,8 @@ namespace Python3Parser {
     }
     type dotted_as_name = {
         dotted_name: dotted_name;
-        as?: dotted_as_name2;
+        as?: name;
     };
-    type dotted_as_name2 = IAsName;
     type import_as_names = {
         import_as_name: import_as_name;
         import_as_names: import_as_name[];
@@ -280,7 +275,6 @@ namespace Python3Parser {
     interface IComName extends withType<"IComName"> {
         name: name;
     }
-    type nonlocal_stmt3 = IComName;
     interface IComTest extends withType<"IComTest"> {
         test: test;
     }
@@ -294,13 +288,13 @@ namespace Python3Parser {
     interface IWhile_stmt extends withType<"IWhile_stmt"> {
         test: test;
         block: block;
-        else?: while_stmt5;
+        else?: block;
     }
     interface IFor_stmt extends withType<"IFor_stmt"> {
         exprlist: exprlist;
         testlist: testlist;
         block: block;
-        else?: for_stmt7;
+        else?: block;
     }
     interface ITry_stmt extends withType<"ITry_stmt"> {
         block: block;
@@ -330,20 +324,17 @@ namespace Python3Parser {
     interface IElseColBlock extends withType<"IElseColBlock"> {
         block: block;
     }
-    type while_stmt5 = IElseColBlock;
-    type for_stmt7 = IElseColBlock;
     type try_stmt4 = Itry_stmt41 | IFinallyColBlock;
     type try_stmt411 = {
         except_clause: except_clause;
         block: block;
     };
-    type try_stmt412 = IElseColBlock;
     interface IFinallyColBlock extends withType<"IFinallyColBlock"> {
         block: block;
     }
     interface Itry_stmt41 extends withType<"Itry_stmt41"> {
         except_clauseblocks: try_stmt411[];
-        else?: try_stmt412;
+        else?: block;
         finally?: block;
     }
     type with_item = {
@@ -355,9 +346,8 @@ namespace Python3Parser {
     };
     type except_clause2 = {
         test: test;
-        as?: except_clause22;
+        as?: name;
     };
-    type except_clause22 = IAsName;
     type block = ISimple_stmts | INlIdtStmtDdt;
     interface INlIdtStmtDdt extends withType<"INlIdtStmtDdt"> {
         stmts: stmt[];
@@ -469,9 +459,8 @@ namespace Python3Parser {
     }
     interface IAttr extends withType<"IAttr"> {
         name: name;
-        names: attr2[];
+        names: name[];
     }
-    type attr2 = IDotName;
     type name_or_attr = IAttr | IName;
     type sequence_pattern = ILCBrMaybe_sequence_patternRCBr | ILBrOpen_sequence_patternRBr;
     interface ILCBrMaybe_sequence_patternRCBr extends withType<"ILCBrMaybe_sequence_patternRCBr"> {
@@ -595,7 +584,6 @@ namespace Python3Parser {
         comp_op: "<" | ">" | "==" | ">=" | "<=" | "<>" | "<>" | "in" | "not in" | "is" | "is not";
         expr: expr;
     };
-    type star_expr = IMultExpr;
     type expr = IAtom_expr | IExprPowExpr | IPlusMinTldPlusExpr | Iexpr4 | IExprPlusMinExpr | IExprShLShRExpr | IExprAndExpr | IExprXorExpr | IExprOrExpr;
     interface IAtom_expr extends withType<"IAtom_expr"> {
         atom: atom;
@@ -666,13 +654,12 @@ namespace Python3Parser {
     };
     type testlist_comp1 = ITest | IStar_expr;
     type testlist_comp2 = IComp_for | IComTestStar_exprStarCom;
-    type testlist_comp221 = IComTestStar_expr;
     type testlist_comp2212 = ITest | IStar_expr;
     interface IComp_for extends withType<"IComp_for"> {
         comp_for: comp_for;
     }
     interface IComTestStar_exprStarCom extends withType<"IComTestStar_exprStarCom"> {
-        ebnfs: testlist_comp221[];
+        ebnfs: testlist_star_expr22[];
     }
     type trailer = ILBrArglistRBr | ILCBrSubscriptlistRCBr | IDotName;
     interface ILCBrSubscriptlistRCBr extends withType<"ILCBrSubscriptlistRCBr"> {
@@ -683,9 +670,8 @@ namespace Python3Parser {
     interface ITestColTestSliceop extends withType<"ITestColTestSliceop"> {
         test1?: test;
         test2?: test;
-        sliceop?: sliceop;
+        sliceop?: test;
     }
-    type sliceop = IColTest;
     type exprlist = {
         exprstar_expr: exprlist1;
         ebnfs: exprlist2[];
@@ -697,9 +683,8 @@ namespace Python3Parser {
     type exprlist2 = IExpr | IStar_expr;
     type testlist = {
         test: test;
-        tests: testlist2[];
+        tests: test[];
     };
-    type testlist2 = IComTest;
     type dictorsetmaker = Idictorsetmaker1 | Idictorsetmaker2;
     type dictorsetmaker111 = ITestColTest | IPowExpr;
     interface ITestColTest extends withType<"ITestColTest"> {
