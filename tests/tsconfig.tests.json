@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",  // Chemin relatif au fichier de configuration de base
+  "compilerOptions": {
+    "rootDir": "../tests",
+    "outDir": "../dist-tests",
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

@@ -2,5 +2,11 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/tests']
+  verbose: true,
+  maxWorkers: 1,
+  transform: {
+    '^.+\\.ts$': [ 'ts-jest', {
+      tsconfig: 'tests/tsconfig.tests.json'
+    } ],
+  },
 };

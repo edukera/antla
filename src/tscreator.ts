@@ -62,7 +62,7 @@ const createFromTSType = (tsType : tsType) : TypeNode => {
 
 const createFromInterface = (decl: interfaceDecl) => {
   return factory.createInterfaceDeclaration(
-    undefined,
+    [factory.createToken(ts.SyntaxKind.ExportKeyword)],
     factory.createIdentifier(decl.name),
     undefined,
     decl.extends ? [factory.createHeritageClause(
@@ -78,7 +78,7 @@ const createFromInterface = (decl: interfaceDecl) => {
 
 const createFromType = (type: typeDecl) => {
   return factory.createTypeAliasDeclaration(
-    undefined,
+    [factory.createToken(ts.SyntaxKind.ExportKeyword)],
     factory.createIdentifier(type.name),
     type.generic? [factory.createTypeParameterDeclaration(
       undefined,
@@ -101,7 +101,7 @@ const createFromDecls = (decls: decl[]) => {
 
 const createNameSpace = (scope: scope) => {
   return factory.createModuleDeclaration(
-    undefined,
+    [factory.createToken(ts.SyntaxKind.ExportKeyword)],
     factory.createIdentifier(scope.name),
     factory.createModuleBlock(factory.createNodeArray(createFromDecls(scope.decls))),
     ts.NodeFlags.Namespace

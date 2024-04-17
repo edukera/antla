@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc -p ./src/tsconfig.src.json",
     "basic": "npm run build; node ./dist/cli.js -g ./tests/grammars/basic/Basic.g4",
     "expr": "npm run build; node ./dist/cli.js -g ./tests/grammars/expr/Expr.g4",
     "python3": "npm run build; node ./dist/cli.js -g ./tests/grammars/python3/Python3Parser.g4",

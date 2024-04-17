@@ -1,6 +1,7 @@
 import { existsSync, unlinkSync } from 'fs';
 import { generate } from '../src/generate'
 
+
 const rm = (file: string) : void => {
   if (existsSync(file)) unlinkSync(file);
 }

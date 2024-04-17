@@ -1,22 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES6",
     "sourceMap": true,
-    //"target": "es5",
-    //"downlevelIteration": true,
-    //"importHelpers": true,
     "module": "commonjs",
-    "rootDir": "./src",
-    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true
-    // ... autres options de compilation
   },
-  "include": [
-    "src/**/*"
-  ],
   "exclude": [
     "./node_modules",
-    "**/*.spec.ts",
+    "./dist",
   ]
 }

@@ -27,6 +27,7 @@ export default class BasicParser extends Parser {
 	public static readonly T__5 = 6;
 	public static readonly NEWLINE = 7;
 	public static readonly INT = 8;
+	public static readonly WS = 9;
 	public static readonly EOF = Token.EOF;
 	public static readonly RULE_prog = 0;
 	public static readonly RULE_expr = 1;
@@ -38,7 +39,7 @@ export default class BasicParser extends Parser {
                                                              null, null, 
                                                              null, null, 
                                                              null, "NEWLINE", 
-                                                             "INT" ];
+                                                             "INT", "WS" ];
 	// tslint:disable:no-trailing-whitespace
 	public static readonly ruleNames: string[] = [
 		"prog", "expr",
@@ -223,7 +224,7 @@ export default class BasicParser extends Parser {
 		return true;
 	}
 
-	public static readonly _serializedATN: number[] = [4,1,8,27,2,0,7,0,2,1,
+	public static readonly _serializedATN: number[] = [4,1,9,27,2,0,7,0,2,1,
 	7,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,3,1,14,8,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,5,1,22,8,1,10,1,12,1,25,9,1,1,1,0,1,2,2,0,2,0,2,1,0,1,2,1,0,3,4,27,
 	0,4,1,0,0,0,2,13,1,0,0,0,4,5,3,2,1,0,5,6,5,0,0,1,6,1,1,0,0,0,7,8,6,1,-1,
