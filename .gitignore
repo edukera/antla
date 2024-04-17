@@ -1,6 +1,3 @@
 node_modules
 src/ANTLRParser/grammar/.antlr
-tests/grammars/basic/.antlr
-tests/grammars/expr/.antlr
-tests/grammars/python3/.antlr
 dist
