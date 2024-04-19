@@ -24,17 +24,18 @@ const getBasicTree = (data: string) : [ProgContext, ErrorLocation[]] => {
 describe('Parse Basic example', () => {
   beforeAll(() => {})
 //  it('Eval basic expr: 1 + 2 * (4 / 2)', () => {
-//    const tree = getBasicTree('1 + 2 * (4 / 2)')
+//    const [tree, errors] = getBasicTree('1 + 2 * (4 / 2)')
 //    const maker = new MakeBasic()
 //    const expr = maker.visitProg(tree)
 //    expect(evalExpr(expr)).toBe(5)
 //  })
-//  it('Eval basic expr: 1 + 2 * (4 / 2)', () => {
-//    const tree = getBasicTree('1 + 2 * (4 / 2)')
-//    const maker = new MakeBasicError()
-//    const expr = maker.visitProg(tree)
-//    expect(ppBasicError(evalExprError(expr))).toBe('5')
-//  })
+  it('Eval basic expr: 1 + 2 * (4 / 2)', () => {
+    const data = '1 + 2 * (4 / 2)'
+    const [tree, errors] = getBasicTree('1 + 2 * (4 / 2)')
+    const maker = new MakeBasicError(data, errors)
+    const expr = maker.visitProg(tree)
+    expect(ppBasicError(evalExprError(expr))).toBe('5')
+  })
 //  it('Eval basic expr with error: 1 + 2 * toto', () => {
 //    const tree = getBasicTree('1 + 2 * toto')
 //    const maker = new MakeBasicError()
