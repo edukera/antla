@@ -4,3 +4,4 @@ tests/grammars/basic/.antlr
 tests/grammars/expr/.antlr
 tests/grammars/python3/.antlr
 dist
+dist-tests

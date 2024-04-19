@@ -26,7 +26,7 @@
       "request": "launch",
       "name": "Debug Jest Tests",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["tests", "--runInBand", "--no-cache"],
+      "args": ["tests/02_basic.test.ts", "--runInBand", "--no-cache"],
       "preLaunchTask": "tsc: build - src/tsconfig.src.json",
       "console": "integratedTerminal",
       "outFiles": ["${workspaceFolder}/dist-tests/**/*.js"],
