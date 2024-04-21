@@ -1,14 +1,15 @@
-import BasicParser from "./grammars/basic/BasicParser";
 import  { CommonTokenStream, ParserRuleContext } from "antlr4"
+
+import BasicParser from "./grammars/basic/BasicParser";
 
 export namespace BasicError {
   export type withType<T> = {
       type: T;
   };
-  export interface ExprError extends withType<'IError'> {
+  export interface Error extends withType<'IError'> {
     slice: string
   }
-  export type expr = IExprMultDivExpr | IExprPlusMinExpr | IInt | ILBrExprRBr | ExprError;
+  export type expr = IExprMultDivExpr | IExprPlusMinExpr | IInt | ILBrExprRBr | Error;
   export interface IExprMultDivExpr extends withType<"IExprMultDivExpr"> {
       expr1: expr;
       tMultIDiv: "*" | "/";
@@ -33,17 +34,18 @@ export class ExtendedBasicParser extends BasicParser {
     super(input)
     this.count = {}
   }
-  enterOuterAlt(localctx: ParserRuleContext, altNum: number): void {
-    super.enterOuterAlt(localctx, altNum);
-    if (localctx.parser !== undefined) {
-      const rule = localctx.parser?.getRuleInvocationStack()[0]
+
+  enterOuterAlt(ctx: ParserRuleContext, altNum: number): void {
+    super.enterOuterAlt(ctx, altNum);
+    //console.log(`Entering rule ${ctx.parser?.getRuleInvocationStack()[0]} (${altNum}) (between ${ctx.start.start} and ${ctx.start.stop} and ${ctx.stop?.start} and ${ctx.stop?.stop})`);
+    if (ctx.parser !== undefined) {
+      const rule = ctx.parser.getRuleInvocationStack()[0]
       if (rule in this.count) {
         this.count[rule] += 1
       } else {
         this.count[rule] = 1
       }
     }
-    //console.log(`Entering alternative ${altNum} of rule ${localctx.parser?.getRuleInvocationStack()}`);
   }
 
   getCount(rule: string) : number {

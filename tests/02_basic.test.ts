@@ -1,7 +1,7 @@
 import { CharStream, CommonTokenStream }  from 'antlr4';
 
 import { ExtendedBasicParser } from './basic_error';
-import { evalExpr, evalExprError, MakeBasic, MakeBasicError, ppBasicError } from './basicVisitors';
+import { evalExprError, MakeBasicError, ppBasicError } from './basicVisitors';
 import BasicLexer from './grammars/basic/BasicLexer'
 import { ProgContext } from './grammars/basic/BasicParser'
 import { ErrorLocation, ErrorLocationListener } from './utils';
@@ -23,13 +23,7 @@ const getBasicTree = (data: string) : [ProgContext, ErrorLocation[]] => {
 
 describe('Parse Basic example', () => {
   beforeAll(() => {})
-//  it('Eval basic expr: 1 + 2 * (4 / 2)', () => {
-//    const [tree, errors] = getBasicTree('1 + 2 * (4 / 2)')
-//    const maker = new MakeBasic()
-//    const expr = maker.visitProg(tree)
-//    expect(evalExpr(expr)).toBe(5)
-//  })
-  it('Eval basic expr: 1 + 2 * (4 / 2)', () => {
+  it('Eval basic expr "1 + 2 * (4 / 2)" as "5"', () => {
     const data = '1 + 2 * (4 / 2)'
     const [tree, errors] = getBasicTree('1 + 2 * (4 / 2)')
     const maker = new MakeBasicError(data, errors)
@@ -58,7 +52,7 @@ describe('Parse Basic example', () => {
 //    //console.log(JSON.stringify(evalExprError(expr), null, 2))
 //    expect(ppBasicError(evalExprError(expr))).toBe('2 + error{ 2 % (3 + 5) }')
 //  })
-  it('Partial evaluation with error: (1 1) + 2 * 3', () => {
+  it('Partial evaluation with error "(1 1) + 2 * 3" as "error{ (1 1) } + 6"', () => {
     const data = '(1 1) + 2 * 3\n'
     const [tree, errors] = getBasicTree(data)
     const maker = new MakeBasicError(data, errors)

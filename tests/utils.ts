@@ -33,8 +33,10 @@ export class ErrorLocationListener<T, P extends CountWize & Parser> implements E
         rule: stack[0],
         count: parser.getCount(stack[0])
       })
+      //console.log(`Parser error at ${charPositionInLine} line ${line} with stack ${stack}`)
     } else if (recognizer instanceof Lexer) {
-
+      //console.log(`Lexer error at ${charPositionInLine} line ${line}`)
+      //const lexer = recognizer as Lexer
     } else {
       throw new Error('recognizer is not a parser or a lexer')
     }
@@ -62,3 +64,4 @@ export const getErrorLocation = (ctx: ParserRuleContext, errors: ErrorLocation[]
     return (el.count === count && el.position >= start && el.position <= stop)
   })
 }
+
