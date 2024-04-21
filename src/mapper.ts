@@ -5,6 +5,7 @@
  * Creation Date: 2024-03-29
  */
 
+import { Options } from "./generate";
 import { alternatives, ebnf, element, grammarSpec, rule, suffix, withType } from "./grammar";
 import { tokenDataBase } from "./tokendb";
 import { decl, field, tsType } from "./types";
@@ -155,7 +156,7 @@ const mkEbnFieldTypeName = (ebnf: ebnf, path: path, concatenationName: string) :
   }
 }
 
-const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
+const eltToDecls = (elt: element, path: path, options: Options) : [field, decl[]] => {
   switch (elt.value.type) {
     case 'ruleRef': {
       var eltType : tsType = {
@@ -178,7 +179,7 @@ const eltToDecls = (elt: element, path: path) : [field, decl[]] => {
       }, []]
     }
     case 'ebnf': {
-      const decls = altListToDecls(elt.value.block, addEbnfPath(path))
+      const decls = altListToDecls(elt.value.block, addEbnfPath(path), options)
       const [fieldName, typeName] = mkEbnFieldTypeName(elt.value, path, decls[0].name)
       decls[0].name = typeName
       return [applySuffix({
@@ -208,8 +209,8 @@ const mergeField = (f1: field, f2: field) : field => {
   throw new Error(`Cannot merge non terminal fields`)
 }
 
-const terminalsToField = (alt: alternatives) : field => {
-  const fields = alt.map(elt => eltToDecls(elt, [])[0])
+const terminalsToField = (alt: alternatives, options: Options) : field => {
+  const fields = alt.map(elt => eltToDecls(elt, [], options)[0])
   return fields.reduce((acc, field) => {
     return mergeField(acc, field)
   })
@@ -248,16 +249,16 @@ const makeAltListName = (name: string, path: path) : string => {
   } else return 't' + removeIfFirst(name, 'I')
 }
 
-const altToDecls = (alt : alternatives, path: path) : [decl, decl[]] => {
+const altToDecls = (alt : alternatives, path: path, options: Options) : [decl, decl[]] => {
   // need to agglutinate non multiple tokens
   const allNonMultiple = alt.every(elt => !isMultiple(elt))
   var [fields, decls] : [field[], decl[]] = [[], []]
   if (allNonMultiple && alt.length > 1) {
-    fields.push(terminalsToField(alt))
+    fields.push(terminalsToField(alt, options))
   } else {
     [fields, decls] = alt.reduce(([acc_fields, acc_decls], elt, i) => {
       if (isMultiple(elt) || alt.length === 1) {
-        const [field, ebnf_decls] = eltToDecls(elt, addAltPath(path, i))
+        const [field, ebnf_decls] = eltToDecls(elt, addAltPath(path, i), options)
         return [acc_fields.concat(applySuffix(field, elt.suffix)), acc_decls.concat(ebnf_decls)]
       } else {
         return [acc_fields, acc_decls]
@@ -281,11 +282,28 @@ const isAltListMultiple = (altlist: alternatives[]) : boolean => {
   return count > 1
 }
 
-const altListToDecls = (altlist: alternatives[], path: path) : [decl, ...decl[]] => {
+/**
+ * Adds the error type to the parser rule union if:
+ * path contains only one rule element
+ * unionDecls are not only literals
+ * @param unionDecls basic union types
+ * @param path
+ * @returns unionDecls plus error type if above conditions are met
+ */
+const addErrorToUnion = (alts: alternatives[], path: path, options: Options) : boolean => {
+  return (
+    options.withError &&
+    path.length === 1 &&
+    path[0].type === 'rule' &&
+    !isAlternativesOfTokens(alts.flat())
+  )
+}
+
+const altListToDecls = (altlist: alternatives[], path: path, options: Options) : [decl, ...decl[]] => {
   const isMultiple = isAltListMultiple(altlist)
   if (altlist.flat().length === 1 && altlist.flat()[0].suffix === undefined) {
     const elt = altlist.flat()[0]
-    const [field, decls] = eltToDecls(elt, path)
+    const [field, decls] = eltToDecls(elt, path, options)
     return [{
       type: 'type',
       name: makeAltListName(field.name, path),
@@ -294,32 +312,33 @@ const altListToDecls = (altlist: alternatives[], path: path) : [decl, ...decl[]]
   }
   const [decls, otherdecls, name] = altlist.reduce(([acc_decls, acc_others, acc_name], alt, i) => {
     const new_path = isMultiple ? addAltPath(path, i) : path
-    const [decl, others] = altToDecls(alt, new_path)
+    const [decl, others] = altToDecls(alt, new_path, options)
     const name = acc_name + capitalize(decl.name)
     return [acc_decls.concat(decl), acc_others.concat(others), name]
   }, [[], [], ''] as [decl[], decl[], string])
+  const unionDecls = decls.map(decl => { return {
+    type: 'ref',
+    name: decl.name
+  } as tsType})
   const decl = {
     type: 'type',
     name: makeAltListName(name, path),
     value: {
       type: 'union',
-      types: decls.map(decl => { return {
-        type: 'ref',
-        name: decl.name
-      } as tsType})
+      types: addErrorToUnion(altlist, path, options) ? unionDecls.concat({ type: 'ref', name: 'Error' }) : unionDecls
     }
   } as decl
   return [decl, ...otherdecls.concat(decls)]
 }
 
-export function grammarToDecls(gSpec : grammarSpec) : decl[] {
+export function grammarToDecls(gSpec : grammarSpec, options: Options) : decl[] {
   // initialize rule database
   tokenDB.init(gSpec)
   // generate declarations for parser rules
   return gSpec.rules.reduce((acc, r) => {
     switch (r.type) {
       case 'parserRuleSpec': {
-        return acc.concat(altListToDecls(r.definition, mkRulePath(r.name)))
+        return acc.concat(altListToDecls(r.definition, mkRulePath(r.name), options))
       }
       case 'lexerRuleSpec': return acc
     }

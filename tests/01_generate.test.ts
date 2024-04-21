@@ -1,6 +1,6 @@
 import { existsSync, unlinkSync } from 'fs';
-import { generate } from '../src/generate'
 
+import { generate } from '../src/generate'
 
 const rm = (file: string) : void => {
   if (existsSync(file)) unlinkSync(file);
@@ -38,7 +38,7 @@ describe('Genreate files', () => {
   })
   tests.forEach(test => {
     it(test.title, () => {
-      generate(test.source, test.output)
+      generate(test.source, { withError: true, outputDir: test.output })
       const doesExist = existsSync(test.output);
       expect(doesExist).toBe(true)
     });

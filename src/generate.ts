@@ -1,3 +1,4 @@
+import { CharStream, CommonTokenStream }  from 'antlr4';
 /**
  * Project Name: ANTLA
  * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
@@ -5,16 +6,16 @@
  * Creation Date: 2024-04-12
  */
 import * as fs from 'fs';
-import { CharStream, CommonTokenStream }  from 'antlr4';
+import path from 'path';
+
 import ANTLRv4Lexer from './ANTLRParser/ANTLRv4Lexer';
 import ANTLRv4Parser from './ANTLRParser/ANTLRv4Parser';
-import { BuildVisitor } from './visitors';
 import { ebnf, grammarSpec, rule } from './grammar';
 import { grammarToDecls } from './mapper';
-import { createTs } from './tscreator';
 import { transformDecls } from './transformer';
+import { createTs } from './tscreator';
 import { writeContentToFile } from './utils';
-import path from 'path';
+import { BuildVisitor } from './visitors';
 
 const simplifyGrammar = (grammar: grammarSpec) : grammarSpec => {
   return { ...grammar,
@@ -40,9 +41,16 @@ const simplifyGrammar = (grammar: grammarSpec) : grammarSpec => {
   }
 }
 
-export function generate(grammar: string, output: string | undefined): void {
+// Define the Options class to manage configuration options.
+export interface Options {
+  // Private fields for the class
+  withError: boolean; // Indicates if errors should be generated
+  outputDir: string | undefined; // The directory for output generation
+}
+
+export function generate(grammar: string, options: Options): void {
   const grammarPath = path.resolve(grammar);
-  const outputPath = output ? path.resolve(output) : undefined;
+  const outputPath = options.outputDir ? path.resolve(options.outputDir) : undefined;
   try {
       const data = fs.readFileSync(grammarPath, { encoding: 'utf-8' });
       //console.log(data);
@@ -55,7 +63,7 @@ export function generate(grammar: string, output: string | undefined): void {
       const builder = new BuildVisitor()
       const grammarNode : grammarSpec = builder.visit(tree) as grammarSpec
       //console.log(JSON.stringify(grammarNode, null, 2))
-      const types = grammarToDecls(simplifyGrammar(grammarNode))
+      const types = grammarToDecls(simplifyGrammar(grammarNode), options)
       //console.log(JSON.stringify(types, null, 2))
       const transformedTypes = transformDecls(types)
       //console.log(JSON.stringify(transformedTypes, null, 2))

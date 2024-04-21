@@ -2,13 +2,20 @@ export namespace Expr {
     export type withType<T> = {
         type: T;
     };
-    export type file_ = equation[];
-    export type equation = {
+    export interface Error extends withType<"IError"> {
+        slice: string;
+    }
+    export type file_ = IEquationEof | Error;
+    export interface IEquationEof extends withType<"IEquationEof"> {
+        equations: equation[];
+    }
+    export type equation = IExpressionRelopExpression | Error;
+    export interface IExpressionRelopExpression extends withType<"IExpressionRelopExpression"> {
         expression1: expression;
         relop: "=" | ">" | "<";
         expression2: expression;
-    };
-    export type expression = IExpressionPowExpression | IExpressionTimesDivExpression | IExpressionPlusMinusExpression | ILparenExpressionRparen | IPlusMinusStarAtom;
+    }
+    export type expression = IExpressionPowExpression | IExpressionTimesDivExpression | IExpressionPlusMinusExpression | ILparenExpressionRparen | IPlusMinusStarAtom | Error;
     export interface IExpressionPowExpression extends withType<"IExpressionPowExpression"> {
         expression1: expression;
         expression2: expression;
@@ -30,7 +37,7 @@ export namespace Expr {
         tPlusIMinuss: ("+" | "-")[];
         atom: atom;
     }
-    export type atom = IScientific | IVariable;
+    export type atom = IScientific | IVariable | Error;
     export interface IScientific extends withType<"IScientific"> {
         scientific: number;
     }

@@ -5,6 +5,7 @@
  * Creation Date: 2024-04-07
  */
 import { count } from "console"
+
 import { array, decl, field, interfaceDecl, pojo, ref, stringliteral, tsType, union } from "./types"
 import { pipeline } from "./utils"
 
@@ -570,10 +571,35 @@ const fixUniqueDecls = (decls: decl[]) : decl[] => {
 }
 
 /******************************************************************************
- * withType type must escape all tranforms
+ * withType and Error types must escape all tranforms
  * @param decls
  * @returns
- ******************************************************************************/
+ *****************************************************************************/
+
+const addErrorType = (decls: decl[]) : decl[] => {
+  const errorType : decl = {
+    type: 'interface',
+    name: 'Error',
+    value: {
+      type: 'pojo',
+      fields: [{
+        name: 'slice',
+        ftype: {
+          type: 'atom',
+          name: 'string'
+        },
+        optional: false
+      }]
+    },
+    extends: {
+      type: 'ref',
+      name: 'withType',
+      genericarg: 'IError'
+    }
+  }
+  return [errorType, ...decls]
+}
+
 const addWithType = (decls: decl[]) : decl[] => {
   const withTypeDecl : decl = {
     type: 'type',
@@ -599,6 +625,7 @@ const addWithType = (decls: decl[]) : decl[] => {
  ******************************************************************************/
 export const transformDecls = (decls: decl[]) : decl[] => {
   return pipeline<decl[]>(
+    addErrorType,
     fixUniqueFields,      // mandatory
     fixUniqueDecls,       // mandatory
     simplifySingleUnion,

@@ -1,7 +1,7 @@
 import { CharStream, CommonTokenStream }  from 'antlr4';
 
 import { ExtendedBasicParser } from './basic_error';
-import { evalExprError, MakeBasicError, ppBasicError } from './basicVisitors';
+import { evalExpr, MakeBasicError, ppBasicError } from './basicVisitors';
 import BasicLexer from './grammars/basic/BasicLexer'
 import { ProgContext } from './grammars/basic/BasicParser'
 import { ErrorLocation, ErrorLocationListener } from './utils';
@@ -28,7 +28,7 @@ describe('Parse Basic example', () => {
     const [tree, errors] = getBasicTree('1 + 2 * (4 / 2)')
     const maker = new MakeBasicError(data, errors)
     const expr = maker.visitProg(tree)
-    expect(ppBasicError(evalExprError(expr))).toBe('5')
+    expect(ppBasicError(evalExpr(expr))).toBe('5')
   })
 //  it('Eval basic expr with error: 1 + 2 * toto', () => {
 //    const tree = getBasicTree('1 + 2 * toto')
@@ -57,6 +57,6 @@ describe('Parse Basic example', () => {
     const [tree, errors] = getBasicTree(data)
     const maker = new MakeBasicError(data, errors)
     const expr = maker.visitProg(tree)
-    expect(ppBasicError(evalExprError(expr))).toBe('error{ (1 1) } + 6')
+    expect(ppBasicError(evalExpr(expr))).toBe('error{ (1 1) } + 6')
   })
 })

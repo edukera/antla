@@ -1,3 +1,4 @@
+import { hideBin } from 'yargs/helpers';
 /**
  * Project Name: ANTLA
  * Author(s): Benoît Rognier (benoit.rognier@edukera.com)
@@ -5,11 +6,11 @@
  * Creation Date: 2024-03-29
  */
 import yargs from 'yargs/yargs';
-import { hideBin } from 'yargs/helpers';
 import { generate } from './generate';
 
 interface CommandLineOptions {
     grammar: string;
+    noerror: boolean;
     output?: string;
   }
 
@@ -27,8 +28,17 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     demandOption: false,
   })
+  .option('noerror', {
+    alias: 'ne',
+    describe: 'AST is generated without error',
+    type: 'boolean',
+    demandOption: false,
+  })
   .help()
   .alias('help', 'h')
   .parse() as CommandLineOptions;
 
-generate(argv.grammar, argv.output);
+generate(argv.grammar, {
+  withError: argv.noerror ? false : true,
+  outputDir: argv.output
+});
