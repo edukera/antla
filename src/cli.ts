@@ -6,6 +6,7 @@ import { hideBin } from 'yargs/helpers';
  * Creation Date: 2024-03-29
  */
 import yargs from 'yargs/yargs';
+
 import { generate } from './generate';
 
 interface CommandLineOptions {

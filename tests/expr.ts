@@ -44,4 +44,6 @@ export namespace Expr {
     export interface IVariable extends withType<"IVariable"> {
         variable: string;
     }
+
+    export type Expr = file_ | equation | expression | atom | string
 }
