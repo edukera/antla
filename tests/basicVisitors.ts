@@ -1,11 +1,11 @@
+import  { CommonTokenStream, ParserRuleContext } from "antlr4"
+
 import { Basic } from './basic'
 import { ProgContext } from "./grammars/basic/BasicParser";
 import { ExprContext } from "./grammars/basic/BasicParser";
+import BasicParser from "./grammars/basic/BasicParser";
 import BasicVistor from './grammars/basic/BasicVisitor'
 import { ErrorLocation, getErrorLocation } from './utils';
-import  { CommonTokenStream, ParserRuleContext } from "antlr4"
-
-import BasicParser from "./grammars/basic/BasicParser";
 
 export class ExtendedBasicParser extends BasicParser {
   count : { [rule: string] : number }
